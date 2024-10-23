@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Təxris vaxtının hesablaması</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Arxa Plan: Azərbaycan Bayrağı */
+        .flag {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: linear-gradient(to bottom, #00BFFF 33.33%, #E82E2E 33.33% 66.66%, #007A33 66.66%);
+        }
+
+        /* İşğal altındakı bölgələrin mətni */
+        .overlay-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 24px;
+            color: gold;
+            z-index: 2;
+            text-shadow: 2px 2px 10px black;
+        }
+
+        h1 {
+            color: #fff;
+            z-index: 2;
+            margin-top: 15vh;
+        }
+
+        label {
+            margin: 10px 0;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+            z-index: 2;
+        }
+
+        select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2;
+            display: none; 
+        }
+
+        /* Aypara şəklində Loading Animasiya */
+        .loader {
+            display: none; /* Başlanğıcda gizlə */
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .loader:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 10px solid transparent;
+            border-top: 10px solid #4CAF50; 
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fill {
+            0% { width: 0; }
+            100% { width: 100%; }
+        }
+
+        /* Qarabağ Azərbaycandır! yazısı */
+        .animated-text {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 36px;
+            font-weight: bold;
+            color: black; /* Qızıl rəng */
+            animation: bounce 2s infinite alternate;
+            text-shadow: 2px 2px 10px black; /* Kölgə effekti */
+            z-index: 2;
+            text-align: center;
+        }
+
+        @keyframes bounce {
+            0% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-15px);
+            }
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Marquee üçün stil */
+        .marquee {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            z-index: 99999999999999999;
+            color: gold;
+            font-size: 20px;
+            text-shadow: 2px 2px 10px black;
+        }
+
+        .marquee div {
+            display: inline-block;
+            white-space: nowrap;
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+    </style>
+    <script>
+        function updateDays() {
+            const education = document.getElementById('education').value;
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+
+            const monthDays = {
+                'Yanvar': 31,
+                'Aprel': 30,
+                'Iyul': 31,
+                'Oktyabr': 31
+            };
+
+            const yearDays = (education === 'tehsilli') ? 365 : 180;
+
+            const currentDate = new Date();
+            const selectedDate = new Date(currentDate.getFullYear(), Object.keys(monthDays).indexOf(month), day);
+
+            if (day > monthDays[month]) {
+                document.getElementById('result').innerText = 'Seçilmiş ay üçün keçərli bir gün seçin.';
+                return;
+            }
+
+            // Loading animasiyasını göstər
+            const loader = document.querySelector('.loader');
+            loader.style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            setTimeout(() => {
+                const timeDiff = selectedDate - currentDate;
+                const totalSeconds = Math.ceil(timeDiff / 1000);
+                const days = Math.floor(totalSeconds / 86400);
+                const hours = Math.floor((totalSeconds % 86400) / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = totalSeconds % 60;
+
+                const result = days > yearDays ? yearDays : days;
+                document.getElementById('result').innerText = 
+                    `Qalan: ${result} gün, ${hours} saat, ${minutes} dəqiqə, ${seconds} saniyə`;
+
+                // Loading animasiyasını gizlə və nəticəni göstər
+                loader.style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+            }, 3000); // 3 saniyə gözlə
+        }
+
+        function updateDaysOptions() {
+            const month = document.getElementById('month').value;
+            const daySelect = document.getElementById('day');
+            const monthDays = {
+                'Yanvar': 31,
+                'Aprel': 30,
+                'Iyul': 31,
+                'Oktyabr': 31
+            };
+
+            const daysInMonth = monthDays[month];
+            daySelect.innerHTML = '';
+            for (let i = 1; i <= daysInMonth; i++) {
+                daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+            }
+
+            updateDays();
+        }
+
+        window.onload = function() {
+            updateDaysOptions();
+        };
+    </script>
+</head>
+<body>
+    <div class="flag"></div>
+    <h1>Təxris vaxtının hesablaması</h1>
+
+    <div class="animated-text">Qarabağ Azərbaycandır!</div>
+
+    <label for="education">Təhsil Vəziyyəti:</label>
+    <select id="education" onchange="updateDays()">
+        <option value="" disabled selected>Təhsil Vəziyyəti</option>
+        <option value="tehsilli">Ali Təhsilli</option>
+        <option value="tehsilsiz">Ali Təhsilsiz</option>
+    </select>
+
+    <label for="month">Ay:</label>
+    <select id="month" onchange="updateDaysOptions()">
+        <option value="" disabled selected>Ay</option>
+        <option value="Yanvar">Yanvar</option>
+        <option value="Aprel">Aprel</option>
+        <option value="Iyul">Iyul</option>
+        <option value="Oktyabr">Oktyabr</option>
+    </select>
+
+    <label for="day">Gün:</label>
+    <select id="day" onchange="updateDays()">
+        <option value="" disabled selected>Gün</option>
+        <!-- Günlər burada JavaScript ilə əlavə ediləcək -->
+    </select>
+
+    <!-- Aypara şəklində Loading Animasiya -->
+    <div class="loader"></div>
+
+    <p id="result"></p>
+
+    <!-- Marquee üçün Bölge Məlumatları -->
+    <div class="marquee">
+        <div>
+            Kəlbəcər - İşğal: 1992-1994, Azad: 2020 | 
+            Laçın - İşğal: 1992-1994, Azad: 2020 | 
+            Ağdam - İşğal: 1992-1994, Azad: 2020 | 
+            Füzuli - İşğal: 1992-1994, Azad: 2020 | 
+            Cəbrayıl - İşğal: 1992-1994, Azad: 2020 | 
+            Zəngilan - İşğal: 1992-1994, Azad: 2020 | 
+            Xocalı - İşğal: 1992-1994, Azad: 2020 | 
+            Xocavənd - İşğal: 1992-1994, Azad: 2020
+        </div>
+    </div>
+</body>
+</html>
