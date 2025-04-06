@@ -1394,667 +1394,672 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-database-compat.min.js"></script>
     
     <script>
-        // Firebase Initialize
-        const firebaseConfig = {
-            apiKey: "AIzaSyALRHajoFgM-fWJYvi1Le-QbduTCUWDeGE",
-            authDomain: "realtimechat-e66a5.firebaseapp.com",
-            databaseURL: "https://realtimechat-e66a5-default-rtdb.firebaseio.com",
-            projectId: "realtimechat-e66a5",
-            storageBucket: "realtimechat-e66a5.firebasestorage.app",
-            messagingSenderId: "954048081853",
-            appId: "1:954048081853:web:659972b27a833f4ec56cd4",
-            measurementId: "G-XWH4L7V03P"
-        };
+        
+// Firebase Initialize
+const firebaseConfig = {
+    apiKey: "AIzaSyALRHajoFgM-fWJYvi1Le-QbduTCUWDeGE",
+    authDomain: "realtimechat-e66a5.firebaseapp.com",
+    databaseURL: "https://realtimechat-e66a5-default-rtdb.firebaseio.com",
+    projectId: "realtimechat-e66a5",
+    storageBucket: "realtimechat-e66a5.firebasestorage.app",
+    messagingSenderId: "954048081853",
+    appId: "1:954048081853:web:659972b27a833f4ec56cd4",
+    measurementId: "G-XWH4L7V03P"
+};
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        
-        // Firebase services
-        const auth = firebase.auth();
-        const database = firebase.database();
-        
-        // DOM Elements
-        const authContainer = document.getElementById('authContainer');
-        const mainContainer = document.getElementById('mainContainer');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const showRegister = document.getElementById('showRegister');
-        const showLogin = document.getElementById('showLogin');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const profileModal = document.getElementById('profileModal');
-        const showProfile = document.getElementById('showProfile');
-        const closeProfile = document.getElementById('closeProfile');
-        const profileName = document.getElementById('profileName');
-        const profileEmail = document.getElementById('profileEmail');
-        const profilePicLarge = document.getElementById('profilePicLarge');
-        const toggleTheme = document.getElementById('toggleTheme');
-        const profileToggleTheme = document.getElementById('profileToggleTheme');
-        const themeToggleText = document.getElementById('themeToggleText');
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const sidebar = document.getElementById('sidebar');
-        const backBtn = document.getElementById('backBtn');
-        const chatList = document.getElementById('chatList');
-        const searchChats = document.getElementById('searchChats');
-        const roomInfoModal = document.getElementById('roomInfoModal');
-        const showRoomInfo = document.getElementById('showRoomInfo');
-        const closeRoomInfo = document.getElementById('closeRoomInfo');
-        const roomIdText = document.getElementById('roomIdText');
-        const copyRoomId = document.getElementById('copyRoomId');
-        const roomCreated = document.getElementById('roomCreated');
-        const shareRoom = document.getElementById('shareRoom');
-        const leaveRoom = document.getElementById('leaveRoom');
-        const joinRoomModal = document.getElementById('joinRoomModal');
-        const showJoinRoom = document.getElementById('showJoinRoom');
-        const closeJoinRoom = document.getElementById('closeJoinRoom');
-        const createRoomBtn = document.getElementById('createRoomBtn');
-        const joinRoomBtn = document.getElementById('joinRoomBtn');
-        const roomName = document.getElementById('roomName');
-        const roomCode = document.getElementById('roomCode');
-        const addChatBtn = document.getElementById('addChatBtn');
-        const emptyState = document.getElementById('emptyState');
-        const chatActive = document.getElementById('chatActive');
-        const activeChatTitle = document.getElementById('activeChatTitle');
-        const activeChatSubtitle = document.getElementById('activeChatSubtitle');
-        const activeChatPic = document.getElementById('activeChatPic');
-        const messagesContainer = document.getElementById('messagesContainer');
-        const messageInput = document.getElementById('messageInput');
-        const sendBtn = document.getElementById('sendBtn');
-        
-        // Current user and active chat
-        let currentUser = null;
-        let activeChat = null;
-        
-        // Check if dark theme is enabled
-        const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
-        if (isDarkTheme) {
-            document.body.classList.add('dark-theme');
-            themeToggleText.textContent = 'Aydınlık Mod';
-            toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
-            profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
-        }
-        
-        // Toggle between login and register forms
-        showRegister.addEventListener('click', () => {
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'flex';
-        });
-        
-        showLogin.addEventListener('click', () => {
-            registerForm.style.display = 'none';
-            loginForm.style.display = 'flex';
-        });
-        
-        // Toggle theme
-        function toggleThemeMode() {
-            const isDark = document.body.classList.toggle('dark-theme');
-            localStorage.setItem('darkTheme', isDark);
-            
-            if (isDark) {
-                themeToggleText.textContent = 'Aydınlık Mod';
-                toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
-                profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
-            } else {
-                themeToggleText.textContent = 'Karanlık Mod';
-                toggleTheme.innerHTML = '<i class="fas fa-moon"></i>';
-                profileToggleTheme.innerHTML = '<i class="fas fa-moon"></i> Karanlık Mod';
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Firebase services
+const auth = firebase.auth();
+const database = firebase.database();
+
+// DOM Elements
+const authContainer = document.getElementById('authContainer');
+const mainContainer = document.getElementById('mainContainer');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const showRegister = document.getElementById('showRegister');
+const showLogin = document.getElementById('showLogin');
+const loginBtn = document.getElementById('loginBtn');
+const registerBtn = document.getElementById('registerBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const profileModal = document.getElementById('profileModal');
+const showProfile = document.getElementById('showProfile');
+const closeProfile = document.getElementById('closeProfile');
+const profileName = document.getElementById('profileName');
+const profileEmail = document.getElementById('profileEmail');
+const profilePicLarge = document.getElementById('profilePicLarge');
+const toggleTheme = document.getElementById('toggleTheme');
+const profileToggleTheme = document.getElementById('profileToggleTheme');
+const themeToggleText = document.getElementById('themeToggleText');
+const toast = document.getElementById('toast');
+const toastMessage = document.getElementById('toastMessage');
+const sidebar = document.getElementById('sidebar');
+const backBtn = document.getElementById('backBtn');
+const chatList = document.getElementById('chatList');
+const searchChats = document.getElementById('searchChats');
+const roomInfoModal = document.getElementById('roomInfoModal');
+const showRoomInfo = document.getElementById('showRoomInfo');
+const closeRoomInfo = document.getElementById('closeRoomInfo');
+const roomIdText = document.getElementById('roomIdText');
+const copyRoomId = document.getElementById('copyRoomId');
+const roomCreated = document.getElementById('roomCreated');
+const shareRoom = document.getElementById('shareRoom');
+const leaveRoom = document.getElementById('leaveRoom');
+const joinRoomModal = document.getElementById('joinRoomModal');
+const showJoinRoom = document.getElementById('showJoinRoom');
+const closeJoinRoom = document.getElementById('closeJoinRoom');
+const createRoomBtn = document.getElementById('createRoomBtn');
+const joinRoomBtn = document.getElementById('joinRoomBtn');
+const roomName = document.getElementById('roomName');
+const roomCode = document.getElementById('roomCode');
+const addChatBtn = document.getElementById('addChatBtn');
+const emptyState = document.getElementById('emptyState');
+const chatActive = document.getElementById('chatActive');
+const activeChatTitle = document.getElementById('activeChatTitle');
+const activeChatSubtitle = document.getElementById('activeChatSubtitle');
+const activeChatPic = document.getElementById('activeChatPic');
+const messagesContainer = document.getElementById('messagesContainer');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+
+// Current user and active chat
+let currentUser = null;
+let activeChat = null;
+
+// Check if dark theme is enabled
+const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+if (isDarkTheme) {
+    document.body.classList.add('dark-theme');
+    themeToggleText.textContent = 'Aydınlık Mod';
+    toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
+    profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+}
+
+// Toggle between login and register forms
+showRegister.addEventListener('click', () => {
+    loginForm.style.display = 'none';
+    registerForm.style.display = 'flex';
+});
+
+showLogin.addEventListener('click', () => {
+    registerForm.style.display = 'none';
+    loginForm.style.display = 'flex';
+});
+
+// Toggle theme
+function toggleThemeMode() {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('darkTheme', isDark);
+
+    if (isDark) {
+        themeToggleText.textContent = 'Aydınlık Mod';
+        toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
+        profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+    } else {
+        themeToggleText.textContent = 'Karanlık Mod';
+        toggleTheme.innerHTML = '<i class="fas fa-moon"></i>';
+        profileToggleTheme.innerHTML = '<i class="fas fa-moon"></i> Karanlık Mod';
+    }
+}
+
+toggleTheme.addEventListener('click', toggleThemeMode);
+profileToggleTheme.addEventListener('click', toggleThemeMode);
+
+// Show toast notification
+function showToast(message, duration = 3000) {
+    toastMessage.textContent = message;
+    toast.classList.add('show');
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
+
+// Login functionality
+loginBtn.addEventListener('click', () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (!email || !password) {
+        showToast('Lütfen tüm alanları doldurun');
+        return;
+    }
+
+    loginBtn.innerHTML = '<span class="loader"></span> Giriş Yapılıyor...';
+    loginBtn.disabled = true;
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            showToast('Başarıyla giriş yapıldı');
+        })
+        .catch((error) => {
+            let errorMessage = 'Giriş başarısız';
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    errorMessage = 'Kullanıcı bulunamadı';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Yanlış şifre';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Geçersiz e-posta adresi';
+                    break;
+                default:
+                    errorMessage = error.message;
             }
-        }
-        
-        toggleTheme.addEventListener('click', toggleThemeMode);
-        profileToggleTheme.addEventListener('click', toggleThemeMode);
-        
-        // Show toast notification
-        function showToast(message, duration = 3000) {
-            toastMessage.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, duration);
-        }
-        
-        // Login functionality
-        loginBtn.addEventListener('click', () => {
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!email || !password) {
-                showToast('Lütfen tüm alanları doldurun');
-                return;
-            }
-            
-            loginBtn.innerHTML = '<span class="loader"></span> Giriş Yapılıyor...';
-            loginBtn.disabled = true;
-            
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Login successful
-                    showToast('Başarıyla giriş yapıldı');
-                })
-                .catch((error) => {
-                    showToast('Giriş başarısız: ' + error.message);
-                    loginBtn.innerHTML = 'Giriş Yap';
-                    loginBtn.disabled = false;
+            showToast(errorMessage);
+            loginBtn.innerHTML = 'Giriş Yap';
+            loginBtn.disabled = false;
+        });
+});
+
+// Register functionality
+registerBtn.addEventListener('click', () => {
+    const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+
+    if (!username || !email || !password || !confirmPassword) {
+        showToast('Lütfen tüm alanları doldurun');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showToast('Şifreler eşleşmiyor');
+        return;
+    }
+
+    if (password.length < 6) {
+        showToast('Şifre en az 6 karakter olmalı');
+        return;
+    }
+
+    registerBtn.innerHTML = '<span class="loader"></span> Kayıt Olunuyor...';
+    registerBtn.disabled = true;
+
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            return user.updateProfile({
+                displayName: username
+            }).then(() => {
+                return database.ref('users/' + user.uid).set({
+                    username: username,
+                    email: email,
+                    createdAt: firebase.database.ServerValue.TIMESTAMP
                 });
-        });
-        
-        // Register functionality
-        registerBtn.addEventListener('click', () => {
-            const username = document.getElementById('regUsername').value;
-            const email = document.getElementById('regEmail').value;
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
-            
-            if (!username || !email || !password || !confirmPassword) {
-                showToast('Lütfen tüm alanları doldurun');
-                return;
+            });
+        })
+        .then(() => {
+            showToast('Kayıt başarılı! Giriş yapılıyor...');
+        })
+        .catch((error) => {
+            let errorMessage = 'Kayıt başarısız';
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'Bu e-posta zaten kullanılıyor';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Geçersiz e-posta adresi';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = 'Şifre çok zayıf, en az 6 karakter olmalı';
+                    break;
+                default:
+                    errorMessage = error.message;
             }
-            
-            if (password !== confirmPassword) {
-                showToast('Şifreler eşleşmiyor');
-                return;
-            }
-            
-            registerBtn.innerHTML = '<span class="loader"></span> Kayıt Olunuyor...';
-            registerBtn.disabled = true;
-            
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Registration successful, update profile
-                    return database.ref('users/' + userCredential.user.uid).set({
-                        username: username,
-                        email: email,
-                        createdAt: firebase.database.ServerValue.TIMESTAMP
-                    });
-                })
-                .then(() => {
-                    showToast('Kayıt başarılı');
-                })
-                .catch((error) => {
-                    showToast('Kayıt başarısız: ' + error.message);
-                    registerBtn.innerHTML = 'Kayıt Ol';
-                    registerBtn.disabled = false;
-                });
+            showToast(errorMessage);
+            registerBtn.innerHTML = 'Kayıt Ol';
+            registerBtn.disabled = false;
         });
-        
-        // Logout functionality
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut()
-                .then(() => {
-                    showToast('Çıkış yapıldı');
-                    profileModal.classList.remove('show');
-                })
-                .catch((error) => {
-                    showToast('Çıkış başarısız: ' + error.message);
-                });
-        });
-        
-        // Auth state change listener
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // User is signed in
-                currentUser = user;
-                
-                // Get user details
-                database.ref('users/' + user.uid).once('value')
-                    .then((snapshot) => {
-                        const userData = snapshot.val();
-                        if (userData) {
-                            // Update profile info
-                            profileName.textContent = userData.username;
-                            profileEmail.textContent = userData.email;
-                            
-                            // Get first letter of username for profile pic
-                            const firstLetter = userData.username.charAt(0).toUpperCase();
-                            profilePicLarge.innerHTML = firstLetter;
-                        }
-                    });
-                
-                // Show main container, hide auth container
-                authContainer.style.display = 'none';
-                mainContainer.style.display = 'block';
-                addChatBtn.style.display = 'flex';
-                
-                // Load user's rooms
-                loadRooms();
-            } else {
-                // User is signed out
-                currentUser = null;
-                activeChat = null;
-                
-                // Clear chat list
-                chatList.innerHTML = '';
-                
-                // Show auth container, hide main container
-                authContainer.style.display = 'flex';
-                mainContainer.style.display = 'none';
-                addChatBtn.style.display = 'none';
-                
-                // Reset forms
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                document.getElementById('regUsername').value = '';
-                document.getElementById('regEmail').value = '';
-                document.getElementById('regPassword').value = '';
-                document.getElementById('regConfirmPassword').value = '';
-                
-                loginBtn.innerHTML = 'Giriş Yap';
-                loginBtn.disabled = false;
-                registerBtn.innerHTML = 'Kayıt Ol';
-                registerBtn.disabled = false;
-                
-                // Hide any active modals
-                profileModal.classList.remove('show');
-                roomInfoModal.classList.remove('show');
-                joinRoomModal.classList.remove('show');
-            }
-        });
-        
-        // Profile modal
-        showProfile.addEventListener('click', () => {
-            profileModal.classList.add('show');
-        });
-        
-        closeProfile.addEventListener('click', () => {
+});
+
+// Logout functionality
+logoutBtn.addEventListener('click', () => {
+    auth.signOut()
+        .then(() => {
+            showToast('Çıkış yapıldı');
             profileModal.classList.remove('show');
+        })
+        .catch((error) => {
+            showToast('Çıkış başarısız: ' + error.message);
         });
-        
-        // Room Info modal
-        showRoomInfo.addEventListener('click', () => {
-            if (activeChat) {
-                // Update room info
-                roomIdText.textContent = activeChat.id;
-                
-                // Format creation date
-                const creationDate = new Date(activeChat.createdAt);
-                roomCreated.textContent = 'Oluşturulma: ' + creationDate.toLocaleDateString('tr-TR');
-                
-                roomInfoModal.classList.add('show');
-            }
+});
+
+// Auth state change listener
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+
+        database.ref('users/' + user.uid).once('value')
+            .then((snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    profileName.textContent = userData.username;
+                    profileEmail.textContent = userData.email;
+                    const firstLetter = userData.username.charAt(0).toUpperCase();
+                    profilePicLarge.innerHTML = firstLetter;
+                }
+            })
+            .catch((error) => {
+                showToast('Kullanıcı bilgileri alınamadı: ' + error.message);
+            });
+
+        authContainer.style.display = 'none';
+        mainContainer.style.display = 'block';
+        addChatBtn.style.display = 'flex';
+
+        loadRooms();
+    } else {
+        currentUser = null;
+        activeChat = null;
+
+        chatList.innerHTML = '';
+
+        authContainer.style.display = 'flex';
+        mainContainer.style.display = 'none';
+        addChatBtn.style.display = 'none';
+
+        document.getElementById('loginEmail').value = '';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('regUsername').value = '';
+        document.getElementById('regEmail').value = '';
+        document.getElementById('regPassword').value = '';
+        document.getElementById('regConfirmPassword').value = '';
+
+        loginBtn.innerHTML = 'Giriş Yap';
+        loginBtn.disabled = false;
+        registerBtn.innerHTML = 'Kayıt Ol';
+        registerBtn.disabled = false;
+
+        profileModal.classList.remove('show');
+        roomInfoModal.classList.remove('show');
+        joinRoomModal.classList.remove('show');
+    }
+});
+
+// Profile modal
+showProfile.addEventListener('click', () => {
+    profileModal.classList.add('show');
+});
+
+closeProfile.addEventListener('click', () => {
+    profileModal.classList.remove('show');
+});
+
+// Room Info modal
+showRoomInfo.addEventListener('click', () => {
+    if (activeChat) {
+        roomIdText.textContent = activeChat.id;
+        const creationDate = new Date(activeChat.createdAt);
+        roomCreated.textContent = 'Oluşturulma: ' + creationDate.toLocaleDateString('tr-TR');
+        roomInfoModal.classList.add('show');
+    }
+});
+
+closeRoomInfo.addEventListener('click', () => {
+    roomInfoModal.classList.remove('show');
+});
+
+// Copy room ID
+copyRoomId.addEventListener('click', () => {
+    const roomId = roomIdText.textContent;
+    navigator.clipboard.writeText(roomId)
+        .then(() => {
+            showToast('Oda ID\'si kopyalandı');
+        })
+        .catch((error) => {
+            showToast('Kopyalama başarısız: ' + error.message);
         });
-        
-        closeRoomInfo.addEventListener('click', () => {
-            roomInfoModal.classList.remove('show');
+});
+
+// Share room
+shareRoom.addEventListener('click', () => {
+    const roomId = roomIdText.textContent;
+    const shareText = `WhatsApp Benzeri Chat'te odama katılın! Oda kodu: ${roomId}`;
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'Oda Davetiyesi',
+            text: shareText
+        })
+        .catch((error) => {
+            showToast('Paylaşım başarısız: ' + error.message);
         });
-        
-        // Copy room ID
-        copyRoomId.addEventListener('click', () => {
-            const roomId = roomIdText.textContent;
-            navigator.clipboard.writeText(roomId)
-                .then(() => {
-                    showToast('Oda ID\'si kopyalandı');
-                })
-                .catch((error) => {
-                    showToast('Kopyalama başarısız: ' + error.message);
-                });
-        });
-        
-        // Share room
-        shareRoom.addEventListener('click', () => {
-            const roomId = roomIdText.textContent;
-            const shareText = `WhatsApp Benzeri Chat'te odama katılın! Oda kodu: ${roomId}`;
-            
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Oda Davetiyesi',
-                    text: shareText
-                })
-                .catch((error) => {
-                    showToast('Paylaşım başarısız: ' + error.message);
-                });
-            } else {
-                navigator.clipboard.writeText(shareText)
-                    .then(() => {
-                        showToast('Davetiye metni kopyalandı');
-                    })
-                    .catch((error) => {
-                        showToast('Kopyalama başarısız: ' + error.message);
-                    });
-            }
-        });
-        
-        // Leave room
-        leaveRoom.addEventListener('click', () => {
-            if (activeChat) {
-                const roomId = activeChat.id;
-                const userId = currentUser.uid;
-                
-                // Remove user from room members
-                database.ref(`rooms/${roomId}/members/${userId}`).remove()
-                    .then(() => {
-                        // Remove room from user's rooms
-                        return database.ref(`users/${userId}/rooms/${roomId}`).remove();
-                    })
-                    .then(() => {
-                        roomInfoModal.classList.remove('show');
-                        showToast('Odadan ayrıldınız');
-                        
-                        // Clear active chat
-                        activeChat = null;
-                        showEmptyState();
-                        
-                        // Reload rooms
-                        loadRooms();
-                    })
-                    .catch((error) => {
-                        showToast('Odadan ayrılma başarısız: ' + error.message);
-                    });
-            }
-        });
-        
-        // Join/Create Room modal
-        addChatBtn.addEventListener('click', () => {
-            joinRoomModal.classList.add('show');
-        });
-        
-        showJoinRoom.addEventListener('click', () => {
-            joinRoomModal.classList.add('show');
-        });
-        
-        closeJoinRoom.addEventListener('click', () => {
+    } else {
+        navigator.clipboard.writeText(shareText)
+            .then(() => {
+                showToast('Davetiye metni kopyalandı');
+            })
+            .catch((error) => {
+                showToast('Kopyalama başarısız: ' + error.message);
+            });
+    }
+});
+
+// Leave room
+leaveRoom.addEventListener('click', () => {
+    if (activeChat) {
+        const roomId = activeChat.id;
+        const userId = currentUser.uid;
+
+        database.ref(`rooms/${roomId}/members/${userId}`).remove()
+            .then(() => {
+                return database.ref(`users/${userId}/rooms/${roomId}`).remove();
+            })
+            .then(() => {
+                roomInfoModal.classList.remove('show');
+                showToast('Odadan ayrıldınız');
+                activeChat = null;
+                showEmptyState();
+                loadRooms();
+            })
+            .catch((error) => {
+                showToast('Odadan ayrılma başarısız: ' + error.message);
+            });
+    }
+});
+
+// Join/Create Room modal
+addChatBtn.addEventListener('click', () => {
+    joinRoomModal.classList.add('show');
+});
+
+showJoinRoom.addEventListener('click', () => {
+    joinRoomModal.classList.add('show');
+});
+
+closeJoinRoom.addEventListener('click', () => {
+    joinRoomModal.classList.remove('show');
+});
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+    });
+});
+
+// Create room
+createRoomBtn.addEventListener('click', () => {
+    const name = roomName.value.trim();
+
+    if (!name) {
+        showToast('Lütfen oda adı girin');
+        return;
+    }
+
+    createRoomBtn.innerHTML = '<span class="loader"></span> Oluşturuluyor...';
+    createRoomBtn.disabled = true;
+
+    const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const newRoomRef = database.ref('rooms/' + roomId);
+    const newRoom = {
+        name: name,
+        createdBy: currentUser.uid,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        members: {
+            [currentUser.uid]: true
+        }
+    };
+
+    newRoomRef.set(newRoom)
+        .then(() => {
+            return database.ref(`users/${currentUser.uid}/rooms/${roomId}`).set(true);
+        })
+        .then(() => {
+            showToast('Oda oluşturuldu');
             joinRoomModal.classList.remove('show');
+            roomName.value = '';
+            createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
+            createRoomBtn.disabled = false;
+            loadRooms();
+        })
+        .catch((error) => {
+            showToast('Oda oluşturma başarısız: ' + error.message);
+            createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
+            createRoomBtn.disabled = false;
         });
-        
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
-            });
-        });
-        
-        // Create room
-        createRoomBtn.addEventListener('click', () => {
-            const name = roomName.value.trim();
-            
-            if (!name) {
-                showToast('Lütfen oda adı girin');
-                return;
+});
+
+// Join room
+joinRoomBtn.addEventListener('click', () => {
+    const code = roomCode.value.trim().toUpperCase();
+
+    if (!code) {
+        showToast('Lütfen oda kodu girin');
+        return;
+    }
+
+    joinRoomBtn.innerHTML = '<span class="loader"></span> Katılınıyor...';
+    joinRoomBtn.disabled = true;
+
+    database.ref('rooms/' + code).once('value')
+        .then((snapshot) => {
+            if (!snapshot.exists()) {
+                throw new Error('Oda bulunamadı');
             }
-            
-            createRoomBtn.innerHTML = '<span class="loader"></span> Oluşturuluyor...';
-            createRoomBtn.disabled = true;
-            
-            // Generate room ID (simple implementation)
-            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-            
-            // Create room in database
-            const newRoomRef = database.ref('rooms/' + roomId);
-            const newRoom = {
-                name: name,
-                createdBy: currentUser.uid,
-                createdAt: firebase.database.ServerValue.TIMESTAMP,
-                members: {
-                    [currentUser.uid]: true
-                }
-            };
-            
-            newRoomRef.set(newRoom)
-                .then(() => {
-                    // Add room to user's rooms
-                    return database.ref(`users/${currentUser.uid}/rooms/${roomId}`).set(true);
-                })
-                .then(() => {
-                    showToast('Oda oluşturuldu');
-                    joinRoomModal.classList.remove('show');
-                    roomName.value = '';
-                    createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
-                    createRoomBtn.disabled = false;
-                    
-                    // Load the new room
-                    loadRooms();
+
+            return database.ref(`rooms/${code}/members/${currentUser.uid}`).set(true);
+        })
+        .then(() => {
+            return database.ref(`users/${currentUser.uid}/rooms/${code}`).set(true);
+        })
+        .then(() => {
+            showToast('Odaya katıldınız');
+            joinRoomModal.classList.remove('show');
+            roomCode.value = '';
+            joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Odaya Katıl';
+            joinRoomBtn.disabled = false;
+            loadRooms();
+        })
+        .catch((error) => {
+            showToast(error.message);
+            joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Odaya Katıl';
+            joinRoomBtn.disabled = false;
+        });
+});
+
+// Load user's rooms
+function loadRooms() {
+    if (!currentUser) return;
+
+    const userRoomsRef = database.ref(`users/${currentUser.uid}/rooms`);
+    userRoomsRef.on('value', (snapshot) => {
+        const rooms = snapshot.val();
+        chatList.innerHTML = '';
+
+        if (!rooms) {
+            showEmptyState();
+            return;
+        }
+
+        Object.keys(rooms).forEach(roomId => {
+            database.ref(`rooms/${roomId}`).once('value')
+                .then((roomSnapshot) => {
+                    const roomData = roomSnapshot.val();
+                    if (roomData) {
+                        addRoomToChatList(roomId, roomData);
+                    }
                 })
                 .catch((error) => {
-                    showToast('Oda oluşturma başarısız: ' + error.message);
-                    createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
-                    createRoomBtn.disabled = false;
+                    showToast('Oda yükleme hatası: ' + error.message);
                 });
         });
-        
-        // Join room
-        joinRoomBtn.addEventListener('click', () => {
-            const code = roomCode.value.trim().toUpperCase();
-            
-            if (!code) {
-                showToast('Lütfen oda kodu girin');
-                return;
+    });
+}
+
+// Add room to chat list
+function addRoomToChatList(roomId, roomData) {
+    const chatItem = document.createElement('div');
+    chatItem.classList.add('chat-item');
+    chatItem.dataset.roomId = roomId;
+
+    database.ref(`rooms/${roomId}/messages`).orderByChild('timestamp').limitToLast(1)
+        .once('value', (snapshot) => {
+            const messages = snapshot.val();
+            let lastMessage = 'Mesaj yok';
+            let lastTime = '';
+
+            if (messages) {
+                const lastMsgKey = Object.keys(messages)[0];
+                const msg = messages[lastMsgKey];
+                lastMessage = msg.text;
+                lastTime = formatTimestamp(msg.timestamp);
             }
-            
-            joinRoomBtn.innerHTML = '<span class="loader"></span> Katılınıyor...';
-            joinRoomBtn.disabled = true;
-            
-            // Check if room exists
-            database.ref('rooms/' + code).once('value')
-                .then((snapshot) => {
-                    if (!snapshot.exists()) {
-                        throw new Error('Oda bulunamadı');
-                    }
-                    
-                    // Add user to room members
-                    return database.ref(`rooms/${code}/members/${currentUser.uid}`).set(true);
-                })
-                .then(() => {
-                    // Add room to user's rooms
-                    return database.ref(`users/${currentUser.uid}/rooms/${code}`).set(true);
-                })
-                .then(() => {
-                    showToast('Odaya katıldınız');
-                    joinRoomModal.classList.remove('show');
-                    roomCode.value = '';
-                    joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i>
-// Load user's rooms
-        function loadRooms() {
-            if (!currentUser) return;
 
-            const userRoomsRef = database.ref(`users/${currentUser.uid}/rooms`);
-            userRoomsRef.on('value', (snapshot) => {
-                const rooms = snapshot.val();
-                chatList.innerHTML = '';
-
-                if (!rooms) {
-                    showEmptyState();
-                    return;
-                }
-
-                // Fetch room details
-                Object.keys(rooms).forEach(roomId => {
-                    database.ref(`rooms/${roomId}`).once('value')
-                        .then((roomSnapshot) => {
-                            const roomData = roomSnapshot.val();
-                            if (roomData) {
-                                addRoomToChatList(roomId, roomData);
-                            }
-                        })
-                        .catch((error) => {
-                            console.error('Oda yükleme hatası:', error);
-                        });
-                });
-            });
-        }
-
-        // Add room to chat list
-        function addRoomToChatList(roomId, roomData) {
-            const chatItem = document.createElement('div');
-            chatItem.classList.add('chat-item');
-            chatItem.dataset.roomId = roomId;
-
-            // Get last message for preview
-            database.ref(`rooms/${roomId}/messages`).orderByChild('timestamp').limitToLast(1)
-                .once('value', (snapshot) => {
-                    const messages = snapshot.val();
-                    let lastMessage = 'Mesaj yok';
-                    let lastTime = '';
-
-                    if (messages) {
-                        const lastMsgKey = Object.keys(messages)[0];
-                        const msg = messages[lastMsgKey];
-                        lastMessage = msg.text;
-                        lastTime = formatTimestamp(msg.timestamp);
-                    }
-
-                    chatItem.innerHTML = `
-                        <div class="profile-pic">${roomData.name.charAt(0).toUpperCase()}</div>
-                        <div class="chat-info">
-                            <div class="chat-title">${roomData.name}</div>
-                            <div class="chat-preview">${lastMessage}</div>
-                        </div>
-                        <div class="chat-meta">
-                            <div class="chat-time">${lastTime}</div>
-                        </div>
-                    `;
-
-                    chatItem.addEventListener('click', () => {
-                        loadChat(roomId, roomData);
-                    });
-
-                    chatList.appendChild(chatItem);
-                });
-        }
-
-        // Format timestamp
-        function formatTimestamp(timestamp) {
-            const date = new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-
-            if (diff < 24 * 60 * 60 * 1000) {
-                // Today
-                return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-            } else {
-                // Older
-                return date.toLocaleDateString('tr-TR');
-            }
-        }
-
-        // Load chat messages
-        function loadChat(roomId, roomData) {
-            activeChat = {
-                id: roomId,
-                name: roomData.name,
-                createdAt: roomData.createdAt
-            };
-
-            // Update chat header
-            activeChatTitle.textContent = roomData.name;
-            activeChatSubtitle.ConcurrentModificationExceptiontext = `${Object.keys(roomData.members || {}).length} Katılımcı`;
-            activeChatPic.innerHTML = roomData.name.charAt(0).toUpperCase();
-
-            // Show chat area
-            emptyState.style.display = 'none';
-            chatActive.style.display = 'flex';
-
-            // Load messages
-            messagesContainer.innerHTML = '';
-            const messagesRef = database.ref(`rooms/${roomId}/messages`);
-            messagesRef.off(); // Remove previous listeners
-            messagesRef.on('child_added', (snapshot) => {
-                const message = snapshot.val();
-                displayMessage(message);
-            });
-
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-            // Mark as active
-            document.querySelectorAll('.chat-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.dataset.roomId === roomId) {
-                    item.classList.add('active');
-                }
-            });
-
-            // Hide sidebar on mobile
-            if (window.innerWidth <= 768) {
-                sidebar.classList.add('hidden');
-            }
-        }
-
-        // Display message
-        function displayMessage(message) {
-            const messageDiv = document.createElement('div');
-            const isOwnMessage = message.userId === currentUser.uid;
-            messageDiv.classList.add('message', isOwnMessage ? 'message-out' : 'message-in');
-
-            const formattedTime = formatTimestamp(message.timestamp);
-            messageDiv.innerHTML = `
-                <div class="message-text">${message.text}</div>
-                <div class="message-time">${formattedTime}</div>
+            chatItem.innerHTML = `
+                <div class="profile-pic">${roomData.name.charAt(0).toUpperCase()}</div>
+                <div class="chat-info">
+                    <div class="chat-title">${roomData.name}</div>
+                    <div class="chat-preview">${lastMessage}</div>
+                </div>
+                <div class="chat-meta">
+                    <div class="chat-time">${lastTime}</div>
+                </div>
             `;
 
-            messagesContainer.appendChild(messageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-
-        // Send message
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
-
-        function sendMessage() {
-            const text = messageInput.value.trim();
-            if (!text || !activeChat) return;
-
-            const message = {
-                userId: currentUser.uid,
-                text: text,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            };
-
-            database.ref(`rooms/${activeChat.id}/messages`).push(message)
-                .then(() => {
-                    messageInput.value = '';
-                })
-                .catch((error) => {
-                    showToast('Mesaj gönderilemedi: ' + error.message);
-                });
-        }
-
-        // Show empty state
-        function showEmptyState() {
-            emptyState.style.display = 'flex';
-            chatActive.style.display = 'none';
-            activeChat = null;
-
-            // Show sidebar on mobile
-            if (window.innerWidth <= 768) {
-                sidebar.classList.remove('hidden');
-            }
-        }
-
-        // Back button for mobile
-        backBtn.addEventListener('click', () => {
-            showEmptyState();
-        });
-
-        // Search chats
-        searchChats.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const chatItems = chatList.querySelectorAll('.chat-item');
-
-            chatItems.forEach(item => {
-                const title = item.querySelector('.chat-title').textContent.toLowerCase();
-                item.style.display = title.includes(searchTerm) ? 'flex' : 'none';
+            chatItem.addEventListener('click', () => {
+                loadChat(roomId, roomData);
             });
-        });
 
-        // Handle window resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 768 && !activeChat) {
-                sidebar.classList.remove('hidden');
-            }
+            chatList.appendChild(chatItem);
         });
+}
 
+// Format timestamp
+function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+
+    if (diff < 24 * 60 * 60 * 1000) {
+        return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    } else {
+        return date.toLocaleDateString('tr-TR');
+    }
+}
+
+// Load chat messages
+function loadChat(roomId, roomData) {
+    activeChat = {
+        id: roomId,
+        name: roomData.name,
+        createdAt: roomData.createdAt
+    };
+
+    activeChatTitle.textContent = roomData.name;
+    activeChatSubtitle.textContent = `${Object.keys(roomData.members || {}).length} Katılımcı`;
+    activeChatPic.innerHTML = roomData.name.charAt(0).toUpperCase();
+
+    emptyState.style.display = 'none';
+    chatActive.style.display = 'flex';
+
+    messagesContainer.innerHTML = '';
+    const messagesRef = database.ref(`rooms/${roomId}/messages`);
+    messagesRef.off();
+    messagesRef.on('child_added', (snapshot) => {
+        const message = snapshot.val();
+        displayMessage(message);
+    });
+
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.roomId === roomId) {
+            item.classList.add('active');
+        }
+    });
+
+    if (window.innerWidth <= 768) {
+        sidebar.classList.add('hidden');
+    }
+}
+
+// Display message
+function displayMessage(message) {
+    const messageDiv = document.createElement('div');
+    const isOwnMessage = message.userId === currentUser.uid;
+    messageDiv.classList.add('message', isOwnMessage ? 'message-out' : 'message-in');
+
+    const formattedTime = formatTimestamp(message.timestamp);
+    messageDiv.innerHTML = `
+        <div class="message-text">${message.text}</div>
+        <div class="message-time">${formattedTime}</div>
+    `;
+
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Send message
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text || !activeChat) return;
+
+    const message = {
+        userId: currentUser.uid,
+        text: text,
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    database.ref(`rooms/${activeChat.id}/messages`).push(message)
+        .then(() => {
+            messageInput.value = '';
+        })
+        .catch((error) => {
+            showToast('Mesaj gönderilemedi: ' + error.message);
+        });
+}
+
+// Show empty state
+function showEmptyState() {
+    emptyState.style.display = 'flex';
+    chatActive.style.display = 'none';
+    activeChat = null;
+
+    if (window.innerWidth <= 768) {
+        sidebar.classList.remove('hidden');
+    }
+}
+
+// Back button for mobile
+backBtn.addEventListener('click', () => {
+    showEmptyState();
+});
+
+// Search chats
+searchChats.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const chatItems = chatList.querySelectorAll('.chat-item');
+
+    chatItems.forEach(item => {
+        const title = item.querySelector('.chat-title').textContent.toLowerCase();
+        item.style.display = title.includes(searchTerm) ? 'flex' : 'none';
+    });
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 768 && !activeChat) {
+        sidebar.classList.remove('hidden');
+    }
+});
     </script>
 </body>
 </html>
