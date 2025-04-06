@@ -425,7 +425,12 @@ body {
     padding: 10px;
     background-color: #f0f0f0;
     border-top: 1px solid var(--border-light);
-    flex-shrink: 0; /* Compose alanı küçülmesin */
+    flex-shrink: 0; /* Küçülmesin */
+    position: sticky; /* Ekranın altında sabit kalsın */
+    bottom: 0; /* Ekranın en altına yapışsın */
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 10; /* Diğer elementlerin üstünde kalsın */
 }
 
         body.dark-theme .compose-container {
@@ -1050,7 +1055,11 @@ body {
         height: 100%;
         width: 100%;
     }
-
+.compose-container {
+        position: sticky;
+        bottom: 0;
+        width: 100%;
+    }
     .chat-active {
         height: 100%;
         width: 100%;
