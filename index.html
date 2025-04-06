@@ -32,12 +32,14 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        body {
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            height: 100vh;
-            overflow: hidden;
-        }
+        
+body {
+    background-color: var(--light-bg);
+    color: var(--light-text);
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+}
 
         body.dark-theme {
             background-color: var(--dark-bg);
@@ -266,24 +268,27 @@
         }
 
         .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--light-chat-bg);
-            position: relative;
-        }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--light-chat-bg);
+    position: relative;
+    width: 100%; /* Genişlik tam ekran */
+    height: 100%; /* Yükseklik tam ekran */
+}
 
         body.dark-theme .chat-container {
             background-color: var(--dark-chat-bg);
         }
 
         .chat-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: #ededed;
-            border-bottom: 1px solid var(--border-light);
-        }
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #ededed;
+    border-bottom: 1px solid var(--border-light);
+    flex-shrink: 0; /* Header küçülmesin */
+}
 
         body.dark-theme .chat-header {
             background-color: #2a2f32;
@@ -408,12 +413,13 @@
         }
 
         .compose-container {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid var(--border-light);
-        }
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-top: 1px solid var(--border-light);
+    flex-shrink: 0; /* Compose alanı küçülmesin */
+}
 
         body.dark-theme .compose-container {
             background-color: #1e2428;
