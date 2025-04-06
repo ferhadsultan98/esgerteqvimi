@@ -1,317 +1,2060 @@
 <!DOCTYPE html>
-<html lang="az">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Təxris vaxtının hesablaması</title>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Benzeri Chat</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: white;
-        position: relative;
-        overflow: hidden;
-        height: 100vh;
-      }
-
-      /* Arxa Plan: Azərbaycan Bayrağı */
-      .flag {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 1;
-        background: linear-gradient(
-          to bottom,
-          #00bfff 33.33%,
-          #e82e2e 33.33% 66.66%,
-          #007a33 66.66%
-        );
-      }
-
-      /* İşğal altındakı bölgələrin mətni */
-      .overlay-text {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        font-size: 24px;
-        color: gold;
-        z-index: 2;
-        text-shadow: 2px 2px 10px black;
-      }
-
-      h1 {
-        color: #fff;
-        z-index: 2;
-        margin-top: 15vh;
-      }
-      a {
-        text-decoration: none;
-        color: black;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
-          sans-serif;
-      }
-      a:hover {
-        text-decoration: solid;
-      }
-      label {
-        margin: 10px 0;
-        font-weight: bold;
-        z-index: 2;
-      }
-
-      select {
-        padding: 10px;
-        font-size: 16px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 30px;
-        transition: border-color 0.3s;
-        z-index: 2;
-        transition: 1s;
-      }
-
-      select:focus {
-        border-color: #007bff;
-        outline: none;
-      }
-
-      #result {
-        margin-top: 20px;
-        font-size: 18px;
-        font-weight: bold;
-        z-index: 2;
-        display: none;
-      }
-
-      /* Aypara şəklində Loading Animasiya */
-      .loader {
-        margin-top: 2vh;
-    display: none; /* Başlanğıcda gizlə */
-    width: 200px; /* Çubuğun uzunluğu */
-    height: 10px; /* Çubuğun hündürlüyü */
-    background-color: #ccc; /* Arxa fonun rəngi */
-    position: relative;
-    overflow: hidden;
-    z-index: 2;
-    border-radius: 5px; /* Küncləri yumşalt */
-}
-
-.loader:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: #4caf50; /* Dolgu rəngi */
-    animation: fill 1s linear infinite; /* Animasiya */
-    transform: translateX(-100%); /* Başlanğıcda gizlət */
-}
-
-@keyframes fill {
-    0% {
-        transform: translateX(-100%); /* Soldan */
-    }
-    100% {
-        transform: translateX(100%); /* Sağa */
-    }
-}
-
-      /* Qarabağ Azərbaycandır! yazısı */
-      .animated-text {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        font-size: 36px;
-        font-weight: bold;
-        color: black; /* Qızıl rəng */
-        animation: bounce 2s infinite alternate;
-        text-shadow: 2px 2px 10px black; /* Kölgə effekti */
-        z-index: 2;
-        text-align: center;
-      }
-
-      @keyframes bounce {
-        0% {
-          transform: translateX(-50%) translateY(0);
+        :root {
+            --primary-color: #128C7E;
+            --secondary-color: #25D366;
+            --light-bg: #f5f5f5;
+            --dark-bg: #272727;
+            --light-chat-bg: #e5ddd5;
+            --dark-chat-bg: #0b141a;
+            --light-text: #333;
+            --dark-text: #f1f1f1;
+            --message-out: #dcf8c6;
+            --message-in: #ffffff;
+            --dark-message-out: #056162;
+            --dark-message-in: #262d31;
+            --border-light: #e0e0e0;
+            --border-dark: #2a2a2a;
         }
-        50% {
-          transform: translateX(-50%) translateY(-15px);
-        }
-        100% {
-          transform: translateX(-50%) translateY(0);
-        }
-      }
 
-      /* Marquee üçün stil */
-      .marquee {
-        position: absolute;
-        bottom: 10px;
-        left: 0;
-        width: 100%;
-        overflow: hidden;
-        z-index: 99999999999999999;
-        color: gold;
-        font-size: 20px;
-        text-shadow: 2px 2px 10px black;
-      }
-
-      .marquee div {
-        display: inline-block;
-        white-space: nowrap;
-        animation: scroll 20s linear infinite;
-      }
-
-      @keyframes scroll {
-        0% {
-          transform: translateX(100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
-        100% {
-          transform: translateX(-100%);
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--light-text);
+            height: 100vh;
+            overflow: hidden;
         }
-      }
+
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 100%;
+        }
+
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .header-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 350px;
+            background-color: var(--light-bg);
+            border-right: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+
+        body.dark-theme .sidebar {
+            background-color: var(--dark-bg);
+            border-right: 1px solid var(--border-dark);
+        }
+
+        .search-container {
+            padding: 10px;
+            background-color: var(--light-bg);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-theme .search-container {
+            background-color: var(--dark-bg);
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        body.dark-theme .search-box {
+            background-color: #323739;
+        }
+
+        .search-box i {
+            color: #919191;
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            border: none;
+            outline: none;
+            background: transparent;
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--light-text);
+        }
+
+        body.dark-theme .search-box input {
+            color: var(--dark-text);
+        }
+
+        .chat-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-light);
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+
+        body.dark-theme .chat-item {
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .chat-item:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        body.dark-theme .chat-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .chat-item.active {
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        body.dark-theme .chat-item.active {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .chat-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-preview {
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        body.dark-theme .chat-preview {
+            color: #aaa;
+        }
+
+        .chat-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            margin-left: 10px;
+        }
+
+        .chat-time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        body.dark-theme .chat-time {
+            color: #aaa;
+        }
+
+        .unread-count {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 50%;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            padding: 0 5px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--light-chat-bg);
+            position: relative;
+        }
+
+        body.dark-theme .chat-container {
+            background-color: var(--dark-chat-bg);
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #ededed;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        body.dark-theme .chat-header {
+            background-color: #2a2f32;
+            border-bottom: 1px solid var(--border-dark);
+        }
+
+        .back-btn {
+            display: none;
+            margin-right: 10px;
+            background: none;
+            border: none;
+            color: var(--light-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        body.dark-theme .back-btn {
+            color: var(--dark-text);
+        }
+
+        .chat-title-container {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .chat-title-text {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-subtitle {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        body.dark-theme .chat-subtitle {
+            color: #aaa;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-action-btn {
+            background: none;
+            border: none;
+            color: #919191;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        body.dark-theme .chat-action-btn {
+            color: #aaa;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-image: url('https://i.pinimg.com/originals/7e/1e/c1/7e1ec1b138172b7516e39dd1bd0d4647.png');
+            background-size: contain;
+        }
+
+        body.dark-theme .messages {
+            background-image: url('https://i.pinimg.com/originals/58/88/68/5888689a9d4e9dcaee5d17c93912c8f6.jpg');
+        }
+
+        .message {
+            max-width: 65%;
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            position: relative;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-in {
+            align-self: flex-start;
+            background-color: var(--message-in);
+            border-top-left-radius: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        body.dark-theme .message-in {
+            background-color: var(--dark-message-in);
+        }
+
+        .message-out {
+            align-self: flex-end;
+            background-color: var(--message-out);
+            border-top-right-radius: 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        body.dark-theme .message-out {
+            background-color: var(--dark-message-out);
+        }
+
+        .message-text {
+            margin-bottom: 4px;
+            word-wrap: break-word;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: right;
+        }
+
+        body.dark-theme .message-time {
+            color: #aaa;
+        }
+
+        .compose-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-top: 1px solid var(--border-light);
+        }
+
+        body.dark-theme .compose-container {
+            background-color: #1e2428;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        .compose-btn {
+            background: none;
+            border: none;
+            color: #919191;
+            cursor: pointer;
+            font-size: 1.3rem;
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .compose-btn:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        body.dark-theme .compose-btn:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .compose-input {
+            flex: 1;
+            border: none;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 0 10px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        body.dark-theme .compose-input {
+            background-color: #323739;
+            color: var(--dark-text);
+        }
+
+        .send-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background-color: #0e7063;
+        }
+
+        /* Auth Styles */
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .auth-card {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideDown 0.4s;
+        }
+
+        body.dark-theme .auth-card {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .auth-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .auth-header h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        body.dark-theme .form-group label {
+            color: #aaa;
+        }
+
+        .form-control {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        body.dark-theme .form-control {
+            background-color: #323739;
+            border-color: #444;
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        .auth-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-btn:hover {
+            background-color: #0e7063;
+        }
+
+        .auth-toggle {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .auth-toggle a {
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Room Creation Styles */
+        .room-creation {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+
+        body.dark-theme .room-creation {
+            border-top: 1px solid #444;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 5px;
+            z-index: 1100;
+            transform: translateX(150%);
+            transition: transform 0.3s;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            margin-right: 10px;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Profile Modal */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .profile-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .profile-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: zoomIn 0.3s;
+        }
+
+        body.dark-theme .profile-content {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .profile-header h3 {
+            color: var(--primary-color);
+        }
+
+        .close-profile {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark-theme .close-profile {
+            color: #aaa;
+        }
+
+        .profile-pic-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        .profile-details {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-name {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        body.dark-theme .profile-email {
+            color: #aaa;
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .profile-btn {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .theme-toggle {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            color: var(--light-text);
+        }
+
+        body.dark-theme .theme-toggle {
+            background-color: #323739;
+            border-color: #444;
+            color: var(--dark-text);
+        }
+
+        /* Room Info Modal */
+        .room-info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .room-info-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .room-info-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        body.dark-theme .room-info-content {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .room-info-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .room-info-header h3 {
+            color: var(--primary-color);
+        }
+
+        .close-room-info {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark-theme .close-room-info {
+            color: #aaa;
+        }
+
+        .room-details {
+            margin-bottom: 20px;
+        }
+
+        .room-id {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        body.dark-theme .room-id {
+            background-color: #323739;
+        }
+
+        .copy-room-id {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .room-created {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        body.dark-theme .room-created {
+            color: #aaa;
+        }
+
+        .room-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .share-room {
+            flex: 1;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .share-room:hover {
+            background-color: #0e7063;
+        }
+
+        .leave-room {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .leave-room:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Add Chat Button */
+        .add-chat-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .add-chat-btn:hover {
+            background-color: #0e7063;
+            transform: scale(1.1);
+        }
+
+        /* Room Join Modal */
+        .join-room-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .join-room-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .join-room-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        body.dark-theme .join-room-content {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .join-room-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .join-room-header h3 {
+            color: var(--primary-color);
+        }
+
+        .close-join-room {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        body.dark-theme .close-join-room {
+            color: #aaa;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        body.dark-theme .tabs {
+            border-bottom: 1px solid #444;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .main-container {
+                position: relative;
+            }
+            
+            .sidebar {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                z-index: 20;
+                transform: translateX(0);
+                height: 100%;
+            }
+            
+            .sidebar.hidden {
+                transform: translateX(-100%);
+            }
+            
+            .back-btn {
+                display: block;
+            }
+            
+            .add-chat-btn {
+                bottom: 70px;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        body.dark-theme .empty-state {
+            color: #aaa;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--light-text);
+        }
+
+        body.dark-theme .empty-state h3 {
+            color: var(--dark-text);
+        }
+
+        .empty-state p {
+            margin-bottom: 20px;
+            max-width: 400px;
+        }
+
+        .start-chat-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .start-chat-btn:hover {
+            background-color: #0e7063;
+        }
+
+        /* Animation for Message Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 7.5px;
+            background-color: var(--message-in);
+            border-top-left-radius: 0;
+            width: fit-content;
+            margin-top: 5px;
+            align-self: flex-start;
+        }
+
+        body.dark-theme .typing-indicator {
+            background-color: var(--dark-message-in);
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #aaa;
+            border-radius: 50%;
+            animation: typingBounce 1.3s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
     </style>
+</head>
+<body>
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>WhatsApp Benzeri Chat</h2>
+                <p>İletişimde kalın</p>
+            </div>
+            <div class="auth-form" id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">E-posta</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta adresiniz">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Şifre</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifreniz">
+                </div>
+                <button type="button" id="loginBtn" class="auth-btn">Giriş Yap</button>
+                <div class="auth-toggle">
+                    Hesabınız yok mu? <a id="showRegister">Kayıt Ol</a>
+                </div>
+            </div>
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label for="regUsername">Kullanıcı Adı</label>
+                    <input type="text" id="regUsername" class="form-control" placeholder="Kullanıcı adınız">
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">E-posta</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="E-posta adresiniz">
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Şifre</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Şifreniz">
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Şifre Tekrar</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin">
+                </div>
+                <button type="button" id="registerBtn" class="auth-btn">Kayıt Ol</button>
+                <div class="auth-toggle">
+                    Zaten hesabınız var mı? <a id="showLogin">Giriş Yap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container" id="mainContainer" style="display: none;">
+        <div class="header">
+            <div class="logo">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp Benzeri</span>
+            </div>
+            <div class="header-buttons">
+                <button class="header-btn" id="toggleTheme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="header-btn" id="showProfile">
+                    <i class="fas fa-user"></i>
+                </button>
+            </div>
+        </div>
+        <div class="main-container">
+            <div class="sidebar" id="sidebar">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Ara veya yeni sohbet başlat" id="searchChats">
+                    </div>
+                </div>
+                <div class="chat-list" id="chatList">
+                    <!-- Chat list items will be populated here -->
+                </div>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="empty-state" id="emptyState">
+                    <i class="far fa-comments"></i>
+                    <h3>Sohbetinize Başlayın</h3>
+                    <p>Sohbet etmek için mevcut bir odaya katılın veya yeni bir oda oluşturun.</p>
+                    <button class="start-chat-btn" id="showJoinRoom">
+                        <i class="fas fa-plus"></i>
+                        Oda Oluştur veya Katıl
+                    </button>
+                </div>
+                <div class="chat-active" id="chatActive" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                    <div class="chat-header">
+                        <button class="back-btn" id="backBtn">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div class="profile-pic" id="activeChatPic">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="chat-title-container">
+                            <div class="chat-title-text" id="activeChatTitle">Oda Adı</div>
+                            <div class="chat-subtitle" id="activeChatSubtitle">3 Katılımcı</div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="chat-action-btn" id="showRoomInfo">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="messages" id="messagesContainer">
+                        <!-- Messages will be populated here -->
+                    </div>
+                    <div class="compose-container">
+                        <button class="compose-btn">
+                            <i class="far fa-smile"></i>
+                        </button>
+                        <button class="compose-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <input type="text" class="compose-input" id="messageInput" placeholder="Mesaj yazın">
+                        <button class="send-btn" id="sendBtn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Chat Button -->
+    <div class="add-chat-btn" id="addChatBtn" style="display: none;">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Bu bir bildirimdir</span>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-content">
+            <div class="profile-header">
+                <h3>Profil</h3>
+                <button class="close-profile" id="closeProfile">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="profile-pic-large" id="profilePicLarge">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-details">
+                <div class="profile-name" id="profileName">Kullanıcı Adı</div>
+                <div class="profile-email" id="profileEmail">kullanici@mail.com</div>
+            </div>
+            <div class="profile-actions">
+                <button class="profile-btn theme-toggle" id="profileToggleTheme">
+                    <i class="fas fa-moon"></i>
+                    <span id="themeToggleText">Karanlık Mod</span>
+                </button>
+                <button class="profile-btn logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Çıkış Yap
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Info Modal -->
+    <div class="room-info-modal" id="roomInfoModal">
+        <div class="room-info-content">
+            <div class="room-info-header">
+                <h3>Oda Bilgisi</h3>
+                <button class="close-room-info" id="closeRoomInfo">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="room-details">
+                <div class="room-id">
+                    <span id="roomIdText">ABC123</span>
+                    <button class="copy-room-id" id="copyRoomId">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+                <div class="room-created" id="roomCreated">
+                    Oluşturulma: 01.01.2023
+                </div>
+            </div>
+            <div class="room-actions">
+                <button class="share-room" id="shareRoom">
+                    <i class="fas fa-share-alt"></i>
+                    Paylaş
+                </button>
+                <button class="leave-room" id="leaveRoom">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Ayrıl
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join/Create Room Modal -->
+    <div class="join-room-modal" id="joinRoomModal">
+        <div class="join-room-content">
+            <div class="join-room-header">
+                <h3>Oda Oluştur veya Katıl</h3>
+                <button class="close-join-room" id="closeJoinRoom">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="tabs">
+                <div class="tab active" data-tab="createRoom">Oda Oluştur</div>
+                <div class="tab" data-tab="joinRoom">Odaya Katıl</div>
+            </div>
+            <div class="tab-content active" id="createRoomTab">
+                <div class="form-group">
+                    <label for="roomName">Oda Adı</label>
+                    <input type="text" id="roomName" class="form-control" placeholder="Odanızın adını girin">
+                </div>
+                <button type="button" id="createRoomBtn" class="auth-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    Oda Oluştur
+                </button>
+            </div>
+            <div class="tab-content" id="joinRoomTab">
+                <div class="form-group">
+                    <label for="roomCode">Oda Kodu</label>
+                    <input type="text" id="roomCode" class="form-control" placeholder="Oda kodunu girin">
+                </div>
+                <button type="button" id="joinRoomBtn" class="auth-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Odaya Katıl
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-auth-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-database-compat.min.js"></script>
+    
     <script>
-      function updateDays() {
-    const education = document.getElementById("education").value;
-    const month = document.getElementById("month").value;
-    const day = document.getElementById("day").value;
-
-    const monthDays = {
-        Yanvar: 31,
-        Aprel: 30,
-        Iyul: 31,
-        Oktyabr: 31,
-    };
-
-    const yearDays = education === "tehsilli" ? 365 : 548;
-
-    const currentDate = new Date();
-    const selectedDate = new Date(
-        currentDate.getFullYear(),
-        Object.keys(monthDays).indexOf(month),
-        day
-    );
-
-    if (day > monthDays[month]) {
-        document.getElementById("result").innerText =
-            "Seçilmiş ay üçün keçərli bir gün seçin.";
-        return;
-    }
-
-    // Loading animasiyasını göstər
-    const loader = document.querySelector(".loader");
-    loader.style.display = "block";
-    document.getElementById("result").style.display = "none";
-
-    setTimeout(() => {
-        const timeDiff = selectedDate - currentDate;
-        const totalSeconds = Math.ceil(timeDiff / 1000);
-        const days = Math.floor(totalSeconds / 86400);
-        const hours = Math.floor((totalSeconds % 86400) / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = totalSeconds % 60;
-
-        // Gün sayını təhsilə uyğun hesablama
-        const resultDays = education === "tehsilli" ? days : days - 183;
-
-        document.getElementById(
-            "result"
-        ).innerText = `Qalan: ${resultDays} gün, ${hours} saat, ${minutes} dəqiqə, ${seconds} saniyə`;
-
-        // Loading animasiyasını gizlə və nəticəni göstər
-        loader.style.display = "none";
-        document.getElementById("result").style.display = "block";
-    }, 3000);
-}
-
-
-      function updateDaysOptions() {
-        const month = document.getElementById("month").value;
-        const daySelect = document.getElementById("day");
-        const monthDays = {
-          Yanvar: 31,
-          Aprel: 30,
-          Iyul: 31,
-          Oktyabr: 31,
+        // Firebase Initialize
+        const firebaseConfig = {
+            apiKey: "AIzaSyALRHajoFgM-fWJYvi1Le-QbduTCUWDeGE",
+            authDomain: "realtimechat-e66a5.firebaseapp.com",
+            databaseURL: "https://realtimechat-e66a5-default-rtdb.firebaseio.com",
+            projectId: "realtimechat-e66a5",
+            storageBucket: "realtimechat-e66a5.firebasestorage.app",
+            messagingSenderId: "954048081853",
+            appId: "1:954048081853:web:659972b27a833f4ec56cd4",
+            measurementId: "G-XWH4L7V03P"
         };
 
-        const daysInMonth = monthDays[month];
-        daySelect.innerHTML = "";
-        for (let i = 1; i <= daysInMonth; i++) {
-          daySelect.innerHTML += `<option value="${i}">${i}</option>`;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
+        // Firebase services
+        const auth = firebase.auth();
+        const database = firebase.database();
+        
+        // DOM Elements
+        const authContainer = document.getElementById('authContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const profileModal = document.getElementById('profileModal');
+        const showProfile = document.getElementById('showProfile');
+        const closeProfile = document.getElementById('closeProfile');
+        const profileName = document.getElementById('profileName');
+        const profileEmail = document.getElementById('profileEmail');
+        const profilePicLarge = document.getElementById('profilePicLarge');
+        const toggleTheme = document.getElementById('toggleTheme');
+        const profileToggleTheme = document.getElementById('profileToggleTheme');
+        const themeToggleText = document.getElementById('themeToggleText');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const sidebar = document.getElementById('sidebar');
+        const backBtn = document.getElementById('backBtn');
+        const chatList = document.getElementById('chatList');
+        const searchChats = document.getElementById('searchChats');
+        const roomInfoModal = document.getElementById('roomInfoModal');
+        const showRoomInfo = document.getElementById('showRoomInfo');
+        const closeRoomInfo = document.getElementById('closeRoomInfo');
+        const roomIdText = document.getElementById('roomIdText');
+        const copyRoomId = document.getElementById('copyRoomId');
+        const roomCreated = document.getElementById('roomCreated');
+        const shareRoom = document.getElementById('shareRoom');
+        const leaveRoom = document.getElementById('leaveRoom');
+        const joinRoomModal = document.getElementById('joinRoomModal');
+        const showJoinRoom = document.getElementById('showJoinRoom');
+        const closeJoinRoom = document.getElementById('closeJoinRoom');
+        const createRoomBtn = document.getElementById('createRoomBtn');
+        const joinRoomBtn = document.getElementById('joinRoomBtn');
+        const roomName = document.getElementById('roomName');
+        const roomCode = document.getElementById('roomCode');
+        const addChatBtn = document.getElementById('addChatBtn');
+        const emptyState = document.getElementById('emptyState');
+        const chatActive = document.getElementById('chatActive');
+        const activeChatTitle = document.getElementById('activeChatTitle');
+        const activeChatSubtitle = document.getElementById('activeChatSubtitle');
+        const activeChatPic = document.getElementById('activeChatPic');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        
+        // Current user and active chat
+        let currentUser = null;
+        let activeChat = null;
+        
+        // Check if dark theme is enabled
+        const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
+        if (isDarkTheme) {
+            document.body.classList.add('dark-theme');
+            themeToggleText.textContent = 'Aydınlık Mod';
+            toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
+            profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+        }
+        
+        // Toggle between login and register forms
+        showRegister.addEventListener('click', () => {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'flex';
+        });
+        
+        showLogin.addEventListener('click', () => {
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'flex';
+        });
+        
+        // Toggle theme
+        function toggleThemeMode() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('darkTheme', isDark);
+            
+            if (isDark) {
+                themeToggleText.textContent = 'Aydınlık Mod';
+                toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
+                profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+            } else {
+                themeToggleText.textContent = 'Karanlık Mod';
+                toggleTheme.innerHTML = '<i class="fas fa-moon"></i>';
+                profileToggleTheme.innerHTML = '<i class="fas fa-moon"></i> Karanlık Mod';
+            }
+        }
+        
+        toggleTheme.addEventListener('click', toggleThemeMode);
+        profileToggleTheme.addEventListener('click', toggleThemeMode);
+        
+        // Show toast notification
+        function showToast(message, duration = 3000) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // Login functionality
+        loginBtn.addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showToast('Lütfen tüm alanları doldurun');
+                return;
+            }
+            
+            loginBtn.innerHTML = '<span class="loader"></span> Giriş Yapılıyor...';
+            loginBtn.disabled = true;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login successful
+                    showToast('Başarıyla giriş yapıldı');
+                })
+                .catch((error) => {
+                    showToast('Giriş başarısız: ' + error.message);
+                    loginBtn.innerHTML = 'Giriş Yap';
+                    loginBtn.disabled = false;
+                });
+        });
+        
+        // Register functionality
+        registerBtn.addEventListener('click', () => {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            if (!username || !email || !password || !confirmPassword) {
+                showToast('Lütfen tüm alanları doldurun');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('Şifreler eşleşmiyor');
+                return;
+            }
+            
+            registerBtn.innerHTML = '<span class="loader"></span> Kayıt Olunuyor...';
+            registerBtn.disabled = true;
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Registration successful, update profile
+                    return database.ref('users/' + userCredential.user.uid).set({
+                        username: username,
+                        email: email,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                })
+                .then(() => {
+                    showToast('Kayıt başarılı');
+                })
+                .catch((error) => {
+                    showToast('Kayıt başarısız: ' + error.message);
+                    registerBtn.innerHTML = 'Kayıt Ol';
+                    registerBtn.disabled = false;
+                });
+        });
+        
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    showToast('Çıkış yapıldı');
+                    profileModal.classList.remove('show');
+                })
+                .catch((error) => {
+                    showToast('Çıkış başarısız: ' + error.message);
+                });
+        });
+        
+        // Auth state change listener
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                currentUser = user;
+                
+                // Get user details
+                database.ref('users/' + user.uid).once('value')
+                    .then((snapshot) => {
+                        const userData = snapshot.val();
+                        if (userData) {
+                            // Update profile info
+                            profileName.textContent = userData.username;
+                            profileEmail.textContent = userData.email;
+                            
+                            // Get first letter of username for profile pic
+                            const firstLetter = userData.username.charAt(0).toUpperCase();
+                            profilePicLarge.innerHTML = firstLetter;
+                        }
+                    });
+                
+                // Show main container, hide auth container
+                authContainer.style.display = 'none';
+                mainContainer.style.display = 'block';
+                addChatBtn.style.display = 'flex';
+                
+                // Load user's rooms
+                loadRooms();
+            } else {
+                // User is signed out
+                currentUser = null;
+                activeChat = null;
+                
+                // Clear chat list
+                chatList.innerHTML = '';
+                
+                // Show auth container, hide main container
+                authContainer.style.display = 'flex';
+                mainContainer.style.display = 'none';
+                addChatBtn.style.display = 'none';
+                
+                // Reset forms
+                document.getElementById('loginEmail').value = '';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('regUsername').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regConfirmPassword').value = '';
+                
+                loginBtn.innerHTML = 'Giriş Yap';
+                loginBtn.disabled = false;
+                registerBtn.innerHTML = 'Kayıt Ol';
+                registerBtn.disabled = false;
+                
+                // Hide any active modals
+                profileModal.classList.remove('show');
+                roomInfoModal.classList.remove('show');
+                joinRoomModal.classList.remove('show');
+            }
+        });
+        
+        // Profile modal
+        showProfile.addEventListener('click', () => {
+            profileModal.classList.add('show');
+        });
+        
+        closeProfile.addEventListener('click', () => {
+            profileModal.classList.remove('show');
+        });
+        
+        // Room Info modal
+        showRoomInfo.addEventListener('click', () => {
+            if (activeChat) {
+                // Update room info
+                roomIdText.textContent = activeChat.id;
+                
+                // Format creation date
+                const creationDate = new Date(activeChat.createdAt);
+                roomCreated.textContent = 'Oluşturulma: ' + creationDate.toLocaleDateString('tr-TR');
+                
+                roomInfoModal.classList.add('show');
+            }
+        });
+        
+        closeRoomInfo.addEventListener('click', () => {
+            roomInfoModal.classList.remove('show');
+        });
+        
+        // Copy room ID
+        copyRoomId.addEventListener('click', () => {
+            const roomId = roomIdText.textContent;
+            navigator.clipboard.writeText(roomId)
+                .then(() => {
+                    showToast('Oda ID\'si kopyalandı');
+                })
+                .catch((error) => {
+                    showToast('Kopyalama başarısız: ' + error.message);
+                });
+        });
+        
+        // Share room
+        shareRoom.addEventListener('click', () => {
+            const roomId = roomIdText.textContent;
+            const shareText = `WhatsApp Benzeri Chat'te odama katılın! Oda kodu: ${roomId}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Oda Davetiyesi',
+                    text: shareText
+                })
+                .catch((error) => {
+                    showToast('Paylaşım başarısız: ' + error.message);
+                });
+            } else {
+                navigator.clipboard.writeText(shareText)
+                    .then(() => {
+                        showToast('Davetiye metni kopyalandı');
+                    })
+                    .catch((error) => {
+                        showToast('Kopyalama başarısız: ' + error.message);
+                    });
+            }
+        });
+        
+        // Leave room
+        leaveRoom.addEventListener('click', () => {
+            if (activeChat) {
+                const roomId = activeChat.id;
+                const userId = currentUser.uid;
+                
+                // Remove user from room members
+                database.ref(`rooms/${roomId}/members/${userId}`).remove()
+                    .then(() => {
+                        // Remove room from user's rooms
+                        return database.ref(`users/${userId}/rooms/${roomId}`).remove();
+                    })
+                    .then(() => {
+                        roomInfoModal.classList.remove('show');
+                        showToast('Odadan ayrıldınız');
+                        
+                        // Clear active chat
+                        activeChat = null;
+                        showEmptyState();
+                        
+                        // Reload rooms
+                        loadRooms();
+                    })
+                    .catch((error) => {
+                        showToast('Odadan ayrılma başarısız: ' + error.message);
+                    });
+            }
+        });
+        
+        // Join/Create Room modal
+        addChatBtn.addEventListener('click', () => {
+            joinRoomModal.classList.add('show');
+        });
+        
+        showJoinRoom.addEventListener('click', () => {
+            joinRoomModal.classList.add('show');
+        });
+        
+        closeJoinRoom.addEventListener('click', () => {
+            joinRoomModal.classList.remove('show');
+        });
+        
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+            });
+        });
+        
+        // Create room
+        createRoomBtn.addEventListener('click', () => {
+            const name = roomName.value.trim();
+            
+            if (!name) {
+                showToast('Lütfen oda adı girin');
+                return;
+            }
+            
+            createRoomBtn.innerHTML = '<span class="loader"></span> Oluşturuluyor...';
+            createRoomBtn.disabled = true;
+            
+            // Generate room ID (simple implementation)
+            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            // Create room in database
+            const newRoomRef = database.ref('rooms/' + roomId);
+            const newRoom = {
+                name: name,
+                createdBy: currentUser.uid,
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                members: {
+                    [currentUser.uid]: true
+                }
+            };
+            
+            newRoomRef.set(newRoom)
+                .then(() => {
+                    // Add room to user's rooms
+                    return database.ref(`users/${currentUser.uid}/rooms/${roomId}`).set(true);
+                })
+                .then(() => {
+                    showToast('Oda oluşturuldu');
+                    joinRoomModal.classList.remove('show');
+                    roomName.value = '';
+                    createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
+                    createRoomBtn.disabled = false;
+                    
+                    // Load the new room
+                    loadRooms();
+                })
+                .catch((error) => {
+                    showToast('Oda oluşturma başarısız: ' + error.message);
+                    createRoomBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Oda Oluştur';
+                    createRoomBtn.disabled = false;
+                });
+        });
+        
+        // Join room
+        joinRoomBtn.addEventListener('click', () => {
+            const code = roomCode.value.trim().toUpperCase();
+            
+            if (!code) {
+                showToast('Lütfen oda kodu girin');
+                return;
+            }
+            
+            joinRoomBtn.innerHTML = '<span class="loader"></span> Katılınıyor...';
+            joinRoomBtn.disabled = true;
+            
+            // Check if room exists
+            database.ref('rooms/' + code).once('value')
+                .then((snapshot) => {
+                    if (!snapshot.exists()) {
+                        throw new Error('Oda bulunamadı');
+                    }
+                    
+                    // Add user to room members
+                    return database.ref(`rooms/${code}/members/${currentUser.uid}`).set(true);
+                })
+                .then(() => {
+                    // Add room to user's rooms
+                    return database.ref(`users/${currentUser.uid}/rooms/${code}`).set(true);
+                })
+                .then(() => {
+                    showToast('Odaya katıldınız');
+                    joinRoomModal.classList.remove('show');
+                    roomCode.value = '';
+                    joinRoomBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i>
+// Load user's rooms
+        function loadRooms() {
+            if (!currentUser) return;
+
+            const userRoomsRef = database.ref(`users/${currentUser.uid}/rooms`);
+            userRoomsRef.on('value', (snapshot) => {
+                const rooms = snapshot.val();
+                chatList.innerHTML = '';
+
+                if (!rooms) {
+                    showEmptyState();
+                    return;
+                }
+
+                // Fetch room details
+                Object.keys(rooms).forEach(roomId => {
+                    database.ref(`rooms/${roomId}`).once('value')
+                        .then((roomSnapshot) => {
+                            const roomData = roomSnapshot.val();
+                            if (roomData) {
+                                addRoomToChatList(roomId, roomData);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Oda yükleme hatası:', error);
+                        });
+                });
+            });
         }
 
-        updateDays();
-      }
+        // Add room to chat list
+        function addRoomToChatList(roomId, roomData) {
+            const chatItem = document.createElement('div');
+            chatItem.classList.add('chat-item');
+            chatItem.dataset.roomId = roomId;
 
-      window.onload = function () {
-        updateDaysOptions();
-      };
+            // Get last message for preview
+            database.ref(`rooms/${roomId}/messages`).orderByChild('timestamp').limitToLast(1)
+                .once('value', (snapshot) => {
+                    const messages = snapshot.val();
+                    let lastMessage = 'Mesaj yok';
+                    let lastTime = '';
+
+                    if (messages) {
+                        const lastMsgKey = Object.keys(messages)[0];
+                        const msg = messages[lastMsgKey];
+                        lastMessage = msg.text;
+                        lastTime = formatTimestamp(msg.timestamp);
+                    }
+
+                    chatItem.innerHTML = `
+                        <div class="profile-pic">${roomData.name.charAt(0).toUpperCase()}</div>
+                        <div class="chat-info">
+                            <div class="chat-title">${roomData.name}</div>
+                            <div class="chat-preview">${lastMessage}</div>
+                        </div>
+                        <div class="chat-meta">
+                            <div class="chat-time">${lastTime}</div>
+                        </div>
+                    `;
+
+                    chatItem.addEventListener('click', () => {
+                        loadChat(roomId, roomData);
+                    });
+
+                    chatList.appendChild(chatItem);
+                });
+        }
+
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 24 * 60 * 60 * 1000) {
+                // Today
+                return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            } else {
+                // Older
+                return date.toLocaleDateString('tr-TR');
+            }
+        }
+
+        // Load chat messages
+        function loadChat(roomId, roomData) {
+            activeChat = {
+                id: roomId,
+                name: roomData.name,
+                createdAt: roomData.createdAt
+            };
+
+            // Update chat header
+            activeChatTitle.textContent = roomData.name;
+            activeChatSubtitle.ConcurrentModificationExceptiontext = `${Object.keys(roomData.members || {}).length} Katılımcı`;
+            activeChatPic.innerHTML = roomData.name.charAt(0).toUpperCase();
+
+            // Show chat area
+            emptyState.style.display = 'none';
+            chatActive.style.display = 'flex';
+
+            // Load messages
+            messagesContainer.innerHTML = '';
+            const messagesRef = database.ref(`rooms/${roomId}/messages`);
+            messagesRef.off(); // Remove previous listeners
+            messagesRef.on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                displayMessage(message);
+            });
+
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Mark as active
+            document.querySelectorAll('.chat-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.roomId === roomId) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Hide sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('hidden');
+            }
+        }
+
+        // Display message
+        function displayMessage(message) {
+            const messageDiv = document.createElement('div');
+            const isOwnMessage = message.userId === currentUser.uid;
+            messageDiv.classList.add('message', isOwnMessage ? 'message-out' : 'message-in');
+
+            const formattedTime = formatTimestamp(message.timestamp);
+            messageDiv.innerHTML = `
+                <div class="message-text">${message.text}</div>
+                <div class="message-time">${formattedTime}</div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Send message
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !activeChat) return;
+
+            const message = {
+                userId: currentUser.uid,
+                text: text,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            database.ref(`rooms/${activeChat.id}/messages`).push(message)
+                .then(() => {
+                    messageInput.value = '';
+                })
+                .catch((error) => {
+                    showToast('Mesaj gönderilemedi: ' + error.message);
+                });
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            emptyState.style.display = 'flex';
+            chatActive.style.display = 'none';
+            activeChat = null;
+
+            // Show sidebar on mobile
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('hidden');
+            }
+        }
+
+        // Back button for mobile
+        backBtn.addEventListener('click', () => {
+            showEmptyState();
+        });
+
+        // Search chats
+        searchChats.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const chatItems = chatList.querySelectorAll('.chat-item');
+
+            chatItems.forEach(item => {
+                const title = item.querySelector('.chat-title').textContent.toLowerCase();
+                item.style.display = title.includes(searchTerm) ? 'flex' : 'none';
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && !activeChat) {
+                sidebar.classList.remove('hidden');
+            }
+        });
+
     </script>
-  </head>
-  <body>
-    <div class="flag"></div>
-    <h1>
-      Təxris vaxtının hesablaması by:
-      <a href="https://www.linkedin.com/in/farhadsultan98/" target="_blank"
-        >Sultanov</a
-      >
-    </h1>
-
-    <div class="animated-text">Qarabağ Azərbaycandır!</div>
-
-    <label for="education">Təhsil Vəziyyəti:</label>
-    <select id="education" onchange="updateDays()">
-      <option value="" disabled selected>Təhsil Vəziyyəti</option>
-      <option value="tehsilli">Ali Təhsilli</option>
-      <option value="tehsilsiz">Ali Təhsilsiz</option>
-    </select>
-
-    <label for="month">Ay:</label>
-    <select id="month" onchange="updateDaysOptions()">
-      <option value="" disabled selected>Ay</option>
-      <option value="Yanvar">Yanvar</option>
-      <option value="Aprel">Aprel</option>
-      <option value="Iyul">Iyul</option>
-      <option value="Oktyabr">Oktyabr</option>
-    </select>
-
-    <label for="day">Gün:</label>
-    <select id="day" onchange="updateDays()">
-      <option value="" disabled selected>Gün</option>
-      <!-- Günlər burada JavaScript ilə əlavə ediləcək -->
-    </select>
-
-    <!-- Aypara şəklində Loading Animasiya -->
-    <div class="loader"></div>
-
-    <p id="result"></p>
-
-    <!-- Marquee üçün Bölge Məlumatları -->
-    <div class="marquee">
-      <div>
-        Kəlbəcər - İşğal: 1992-1994, Azad: 2020 | Laçın - İşğal: 1992-1994,
-        Azad: 2020 | Ağdam - İşğal: 1992-1994, Azad: 2020 | Füzuli - İşğal:
-        1992-1994, Azad: 2020 | Cəbrayıl - İşğal: 1992-1994, Azad: 2020 |
-        Zəngilan - İşğal: 1992-1994, Azad: 2020 | Xocalı - İşğal: 1992-1994,
-        Azad: 2020 | Xocavənd - İşğal: 1992-1994, Azad: 2020
-      </div>
-    </div>
-  </body>
+</body>
 </html>
