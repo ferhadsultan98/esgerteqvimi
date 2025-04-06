@@ -1165,43 +1165,43 @@ background: red;
     <div class="auth-container" id="authContainer">
         <div class="auth-card">
             <div class="auth-header">
-                <h2>WhatsApp Benzeri Chat</h2>
-                <p>İletişimde kalın</p>
+                <h2>WhatsChat</h2>
+                <p>Əlaqədə qalın</p>
             </div>
             <div class="auth-form" id="loginForm">
                 <div class="form-group">
-                    <label for="loginEmail">E-posta</label>
-                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta adresiniz">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="Email adresiniz">
                 </div>
                 <div class="form-group">
-                    <label for="loginPassword">Şifre</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifreniz">
+                    <label for="loginPassword">Şifrə</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifrəniz">
                 </div>
-                <button type="button" id="loginBtn" class="auth-btn">Giriş Yap</button>
+                <button type="button" id="loginBtn" class="auth-btn">Daxil ol</button>
                 <div class="auth-toggle">
-                    Hesabınız yok mu? <a id="showRegister">Kayıt Ol</a>
+                    Hesabınız yoxdur? <a id="showRegister">Qeydiyyatdan keç</a>
                 </div>
             </div>
             <div class="auth-form" id="registerForm" style="display: none;">
                 <div class="form-group">
-                    <label for="regUsername">Kullanıcı Adı</label>
-                    <input type="text" id="regUsername" class="form-control" placeholder="Kullanıcı adınız">
+                    <label for="regUsername">İstifadəçi ad</label>
+                    <input type="text" id="regUsername" class="form-control" placeholder="İstifadəçi adınız">
                 </div>
                 <div class="form-group">
-                    <label for="regEmail">E-posta</label>
-                    <input type="email" id="regEmail" class="form-control" placeholder="E-posta adresiniz">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="Email adresiniz">
                 </div>
                 <div class="form-group">
-                    <label for="regPassword">Şifre</label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="Şifreniz">
+                    <label for="regPassword">Şifrə</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Şifrəniz">
                 </div>
                 <div class="form-group">
-                    <label for="regConfirmPassword">Şifre Tekrar</label>
-                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin">
+                    <label for="regConfirmPassword">Şifrə Təkrar</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Şifrənizi təkrar yazın">
                 </div>
-                <button type="button" id="registerBtn" class="auth-btn">Kayıt Ol</button>
+                <button type="button" id="registerBtn" class="auth-btn">Qeydiyyatdan keç</button>
                 <div class="auth-toggle">
-                    Zaten hesabınız var mı? <a id="showLogin">Giriş Yap</a>
+                    Hesabınız var?<a id="showLogin">Daxil ol</a>
                 </div>
             </div>
         </div>
@@ -1212,7 +1212,7 @@ background: red;
         <div class="header">
             <div class="logo">
                 <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Benzeri</span>
+                <span>WhatsChat</span>
             </div>
             <div class="header-buttons">
                 <button class="header-btn" id="toggleTheme">
@@ -1228,7 +1228,7 @@ background: red;
                 <div class="search-container">
                     <div class="search-box">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Ara veya yeni sohbet başlat" id="searchChats">
+                        <input type="text" placeholder="Axtar vəya yeni söhbət başlat" id="searchChats">
                     </div>
                 </div>
                 <div class="chat-list" id="chatList">
@@ -1238,11 +1238,11 @@ background: red;
             <div class="chat-container" id="chatContainer">
                 <div class="empty-state" id="emptyState">
                     <i class="far fa-comments"></i>
-                    <h3>Sohbetinize Başlayın</h3>
-                    <p>Sohbet etmek için mevcut bir odaya katılın veya yeni bir oda oluşturun.</p>
+                    <h3>Söhbətinizə başlayın</h3>
+                    <p>Söhbət etmək üçün mövcud bir otağa qatılın vəya yeni bir otaq yaradın.</p>
                     <button class="start-chat-btn" id="showJoinRoom">
                         <i class="fas fa-plus"></i>
-                        Oda Oluştur veya Katıl
+                        Otağ Yarat vəya Qatıl
                     </button>
                 </div>
                 <div class="chat-active" id="chatActive" style="display: none; height: 100%; display: flex; flex-direction: column;">
@@ -1254,8 +1254,8 @@ background: red;
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="chat-title-container">
-                            <div class="chat-title-text" id="activeChatTitle">Oda Adı</div>
-                            <div class="chat-subtitle" id="activeChatSubtitle">3 Katılımcı</div>
+                            <div class="chat-title-text" id="activeChatTitle">Otaq Adı</div>
+                            <div class="chat-subtitle" id="activeChatSubtitle">İştirakçılar</div>
                         </div>
                         <div class="chat-actions">
                             <button class="chat-action-btn" id="showRoomInfo">
