@@ -1,1400 +1,1499 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp Benzeri Chat</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #128C7E;
-            --secondary-color: #25D366;
-            --light-bg: #f5f5f5;
-            --dark-bg: #272727;
-            --light-chat-bg: #e5ddd5;
-            --dark-chat-bg: #0b141a;
-            --light-text: #333;
-            --dark-text: #f1f1f1;
-            --message-out: #dcf8c6;
-            --message-in: #ffffff;
-            --dark-message-out: #056162;
-            --dark-message-in: #262d31;
-            --border-light: #e0e0e0;
-            --border-dark: #2a2a2a;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        body {
-            background-color: var(--light-bg);
-            color: var(--light-text);
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        body.dark-theme {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 100%;
-        }
-
-        .header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            z-index: 10;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-
-        .logo i {
-            margin-right: 10px;
-        }
-
-        .header-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .header-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s;
-        }
-
-        .header-btn:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 350px;
-            background-color: var(--light-bg);
-            border-right: 1px solid var(--border-light);
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-
-        body.dark-theme .sidebar {
-            background-color: var(--dark-bg);
-            border-right: 1px solid var(--border-dark);
-        }
-
-        .search-container {
-            padding: 10px;
-            background-color: var(--light-bg);
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        body.dark-theme .search-container {
-            background-color: var(--dark-bg);
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background-color: white;
-            border-radius: 20px;
-            padding: 8px 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        body.dark-theme .search-box {
-            background-color: #323739;
-        }
-
-        .search-box i {
-            color: #919191;
-            margin-right: 10px;
-        }
-
-        .search-box input {
-            border: none;
-            outline: none;
-            background: transparent;
-            width: 100%;
-            font-size: 0.95rem;
-            color: var(--light-text);
-        }
-
-        body.dark-theme .search-box input {
-            color: var(--dark-text);
-        }
-
-        .chat-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
-
-        .chat-item {
-            display: flex;
-            padding: 12px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid var(--border-light);
-            align-items: center;
-            transition: background-color 0.2s;
-        }
-
-        body.dark-theme .chat-item {
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        .chat-item:hover {
-            background-color: rgba(0,0,0,0.05);
-        }
-
-        body.dark-theme .chat-item:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        .chat-item.active {
-            background-color: rgba(0,0,0,0.1);
-        }
-
-        body.dark-theme .chat-item.active {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .profile-pic {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-
-        .chat-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .chat-title {
-            font-weight: 500;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-preview {
-            font-size: 0.85rem;
-            color: #666;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        body.dark-theme .chat-preview {
-            color: #aaa;
-        }
-
-        .chat-meta {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            margin-left: 10px;
-        }
-
-        .chat-time {
-            font-size: 0.75rem;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        body.dark-theme .chat-time {
-            color: #aaa;
-        }
-
-        .unread-count {
-            background-color: var(--secondary-color);
-            color: white;
-            border-radius: 50%;
-            min-width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            padding: 0 5px;
-        }
-
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--light-chat-bg);
-            position: relative;
-        }
-
-        body.dark-theme .chat-container {
-            background-color: var(--dark-chat-bg);
-        }
-
-        .chat-header {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background-color: #ededed;
-            border-bottom: 1px solid var(--border-light);
-        }
-
-        body.dark-theme .chat-header {
-            background-color: #2a2f32;
-            border-bottom: 1px solid var(--border-dark);
-        }
-
-        .back-btn {
-            display: none;
-            margin-right: 10px;
-            background: none;
-            border: none;
-            color: var(--light-text);
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        body.dark-theme .back-btn {
-            color: var(--dark-text);
-        }
-
-        .chat-title-container {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .chat-title-text {
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-subtitle {
-            font-size: 0.8rem;
-            color: #666;
-        }
-
-        body.dark-theme .chat-subtitle {
-            color: #aaa;
-        }
-
-        .chat-actions {
-            display: flex;
-            gap: 15px;
-        }
-
-        .chat-action-btn {
-            background: none;
-            border: none;
-            color: #919191;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        body.dark-theme .chat-action-btn {
-            color: #aaa;
-        }
-
-        .messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            background-image: url('https://i.pinimg.com/originals/7e/1e/c1/7e1ec1b138172b7516e39dd1bd0d4647.png');
-            background-size: contain;
-        }
-
-        body.dark-theme .messages {
-            background-image: url('https://i.pinimg.com/originals/58/88/68/5888689a9d4e9dcaee5d17c93912c8f6.jpg');
-        }
-
-        .message {
-            max-width: 65%;
-            padding: 8px 12px;
-            border-radius: 7.5px;
-            position: relative;
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .message-in {
-            align-self: flex-start;
-            background-color: var(--message-in);
-            border-top-left-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        body.dark-theme .message-in {
-            background-color: var(--dark-message-in);
-        }
-
-        .message-out {
-            align-self: flex-end;
-            background-color: var(--message-out);
-            border-top-right-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        body.dark-theme .message-out {
-            background-color: var(--dark-message-out);
-        }
-
-        .message-text {
-            margin-bottom: 4px;
-            word-wrap: break-word;
-        }
-
-        .message-time {
-            font-size: 0.7rem;
-            color: #999;
-            text-align: right;
-        }
-
-        body.dark-theme .message-time {
-            color: #aaa;
-        }
-
-        .compose-container {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid var(--border-light);
-        }
-
-        body.dark-theme .compose-container {
-            background-color: #1e2428;
-            border-top: 1px solid var(--border-dark);
-        }
-
-        .compose-btn {
-            background: none;
-            border: none;
-            color: #919191;
-            cursor: pointer;
-            font-size: 1.3rem;
-            padding: 10px;
-            border-radius: 50%;
-            transition: background-color 0.2s;
-        }
-
-        .compose-btn:hover {
-            background-color: rgba(0,0,0,0.05);
-        }
-
-        body.dark-theme .compose-btn:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        .compose-input {
-            flex: 1;
-            border: none;
-            background-color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            margin: 0 10px;
-            outline: none;
-            font-size: 0.95rem;
-        }
-
-        body.dark-theme .compose-input {
-            background-color: #323739;
-            color: var(--dark-text);
-        }
-
-        .send-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .send-btn:hover {
-            background-color: #0e7063;
-        }
-
-        /* Auth Styles */
-        .auth-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .auth-card {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: slideDown 0.4s;
-        }
-
-        body.dark-theme .auth-card {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .auth-header {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .auth-header h2 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-
-        .auth-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-group label {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        body.dark-theme .form-group label {
-            color: #aaa;
-        }
-
-        .form-control {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        body.dark-theme .form-control {
-            background-color: #323739;
-            border-color: #444;
-            color: var(--dark-text);
-        }
-
-        .form-control:focus {
-            border-color: var(--primary-color);
-        }
-
-        .auth-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .auth-btn:hover {
-            background-color: #0e7063;
-        }
-
-        .auth-toggle {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        .auth-toggle a {
-            color: var(--primary-color);
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        /* Room Creation Styles */
-        .room-creation {
-            margin-top: 20px;
-            border-top: 1px solid #ddd;
-            padding-top: 15px;
-        }
-
-        body.dark-theme .room-creation {
-            border-top: 1px solid #444;
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            background-color: rgba(0,0,0,0.8);
-            color: white;
-            border-radius: 5px;
-            z-index: 1100;
-            transform: translateX(150%);
-            transition: transform 0.3s;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast i {
-            margin-right: 10px;
-        }
-
-        /* Loading Spinner */
-        .loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Profile Modal */
-        .profile-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .profile-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .profile-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            animation: zoomIn 0.3s;
-        }
-
-        body.dark-theme .profile-content {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        @keyframes zoomIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .profile-header h3 {
-            color: var(--primary-color);
-        }
-
-        .close-profile {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        body.dark-theme .close-profile {
-            color: #aaa;
-        }
-
-        .profile-pic-large {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 20px;
-        }
-
-        .profile-details {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-name {
-            font-size: 1.2rem;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .profile-email {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        body.dark-theme .profile-email {
-            color: #aaa;
-        }
-
-        .profile-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .profile-btn {
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .logout-btn {
-            background-color: #f44336;
-            color: white;
-            border: none;
-        }
-
-        .logout-btn:hover {
-            background-color: #d32f2f;
-        }
-
-        .theme-toggle {
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            color: var(--light-text);
-        }
-
-        body.dark-theme .theme-toggle {
-            background-color: #323739;
-            border-color: #444;
-            color: var(--dark-text);
-        }
-
-        /* Room Info Modal */
-        .room-info-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .room-info-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .room-info-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        body.dark-theme .room-info-content {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .room-info-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .room-info-header h3 {
-            color: var(--primary-color);
-        }
-
-        .close-room-info {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        body.dark-theme .close-room-info {
-            color: #aaa;
-        }
-
-        .room-details {
-            margin-bottom: 20px;
-        }
-
-        .room-id {
-            background-color: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        body.dark-theme .room-id {
-            background-color: #323739;
-        }
-
-        .copy-room-id {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-
-        .room-created {
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        body.dark-theme .room-created {
-            color: #aaa;
-        }
-
-        .room-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .share-room {
-            flex: 1;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .share-room:hover {
-            background-color: #0e7063;
-        }
-
-        .leave-room {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            transition: background-color 0.3s;
-        }
-
-        .leave-room:hover {
-            background-color: #d32f2f;
-        }
-
-        /* Add Chat Button */
-        .add-chat-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-            z-index: 100;
-            transition: transform 0.3s, background-color 0.3s;
-        }
-
-        .add-chat-btn:hover {
-            background-color: #0e7063;
-            transform: scale(1.1);
-        }
-
-        /* Room Join Modal */
-        .join-room-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s, visibility 0.3s;
-        }
-
-        .join-room-modal.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .join-room-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        body.dark-theme .join-room-content {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
-        .join-room-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .join-room-header h3 {
-            color: var(--primary-color);
-        }
-
-        .close-join-room {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        body.dark-theme .close-join-room {
-            color: #aaa;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        body.dark-theme .tabs {
-            border-bottom: 1px solid #444;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: border-color 0.3s;
-        }
-
-        .tab.active {
-            border-bottom-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Responsive Styles */
-        @media (max-width: 768px) {
-            .main-container {
-                position: relative;
-            }
-            
-            .sidebar {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 20;
-                transform: translateX(0);
-                height: 100%;
-            }
-            
-            .sidebar.hidden {
-                transform: translateX(-100%);
-            }
-            
-            .back-btn {
-                display: block;
-            }
-            
-            .add-chat-btn {
-                bottom: 70px;
-            }
-        }
-
-        /* Empty State */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 20px;
-            color: #666;
-        }
-
-        body.dark-theme .empty-state {
-            color: #aaa;
-        }
-
-        .empty-state i {
-            font-size: 5rem;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            opacity: 0.7;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-            color: var(--light-text);
-        }
-
-        body.dark-theme .empty-state h3 {
-            color: var(--dark-text);
-        }
-
-        .empty-state p {
-            margin-bottom: 20px;
-            max-width: 400px;
-        }
-
-        .start-chat-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .start-chat-btn:hover {
-            background-color: #0e7063;
-        }
-
-        /* Animation for Message Typing Indicator */
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 7.5px;
-            background-color: var(--message-in);
-            border-top-left-radius: 0;
-            width: fit-content;
-            margin-top: 5px;
-            align-self: flex-start;
-        }
-
-        body.dark-theme .typing-indicator {
-            background-color: var(--dark-message-in);
-        }
-
-        .typing-dots {
-            display: flex;
-            gap: 4px;
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #aaa;
-            border-radius: 50%;
-            animation: typingBounce 1.3s infinite;
-        }
-
-        .typing-dot:nth-child(2) {
-            animation-delay: 0.15s;
-        }
-
-        .typing-dot:nth-child(3) {
-            animation-delay: 0.3s;
-        }
-
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-5px); }
-        }
-    </style>
-</head>
-<body>
-    <!-- Auth Container -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WhatsChat App</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+<style>
+    :root {
+  --primary-color: #128c7e;
+  --secondary-color: #25d366;
+  --light-bg: #f5f5f5;
+  --dark-bg: #272727;
+  --light-chat-bg: #e5ddd5;
+  --dark-chat-bg: #0b141a;
+  --light-text: #333;
+  --dark-text: #f1f1f1;
+  --message-out: #dcf8c6;
+  --message-in: #ffffff;
+  --dark-message-out: #056162;
+  --dark-message-in: #262d31;
+  --border-light: #e0e0e0;
+  --border-dark: #2a2a2a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+  background-color: var(--light-bg);
+  color: var(--light-text);
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.dark-theme {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 100%;
+}
+
+.header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.logo i {
+  margin-right: 10px;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.header-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 5px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.header-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-container {
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 23%;
+  background-color: var(--light-bg);
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  height: 100%;
+}
+
+body.dark-theme .sidebar {
+  background-color: var(--dark-bg);
+  border-right: 1px solid var(--border-dark);
+}
+
+.search-container {
+  padding: 10px;
+  background-color: var(--light-bg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.dark-theme .search-container {
+  background-color: var(--dark-bg);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 20px;
+  padding: 8px 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .search-box {
+  background-color: #323739;
+}
+
+.search-box i {
+  color: #919191;
+  margin-right: 10px;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--light-text);
+}
+
+body.dark-theme .search-box input {
+  color: var(--dark-text);
+}
+
+.chat-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+.chat-item {
+  display: flex;
+  padding: 12px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-light);
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+body.dark-theme .chat-item {
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.chat-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .chat-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.chat-item.active {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .chat-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.chat-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-title {
+  font-weight: 500;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-preview {
+  font-size: 0.85rem;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.dark-theme .chat-preview {
+  color: #aaa;
+}
+
+.chat-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 10px;
+}
+
+.chat-time {
+  font-size: 0.75rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+body.dark-theme .chat-time {
+  color: #aaa;
+}
+
+.unread-count {
+  background-color: var(--secondary-color);
+  color: white;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding: 0 5px;
+}
+
+.chat-container {
+  width: 77%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--light-chat-bg);
+  position: relative;
+}
+
+body.dark-theme .chat-container {
+  background-color: var(--dark-chat-bg);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #ededed;
+  border-bottom: 1px solid var(--border-light);
+}
+
+body.dark-theme .chat-header {
+  background-color: #2a2f32;
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.back-btn {
+  display: none;
+  margin-right: 10px;
+  background: none;
+  border: none;
+  color: var(--light-text);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+body.dark-theme .back-btn {
+  color: var(--dark-text);
+}
+
+.chat-title-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-title-text {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-subtitle {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+body.dark-theme .chat-subtitle {
+  color: #aaa;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.chat-action-btn {
+  background: none;
+  border: none;
+  color: #919191;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+body.dark-theme .chat-action-btn {
+  color: #aaa;
+}
+
+.messages {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-image: url("https://i.pinimg.com/originals/7e/1e/c1/7e1ec1b138172b7516e39dd1bd0d4647.png");
+  background-size: contain;
+  background-color: red;
+  height: 70vh;
+}
+
+body.dark-theme .messages {
+  background-image: url("https://i.pinimg.com/originals/58/88/68/5888689a9d4e9dcaee5d17c93912c8f6.jpg");
+}
+
+.message {
+  max-width: 65%;
+  padding: 8px 12px;
+  border-radius: 7.5px;
+  position: relative;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-in {
+  align-self: flex-start;
+  background-color: var(--message-in);
+  border-top-left-radius: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .message-in {
+  background-color: var(--dark-message-in);
+}
+
+.message-out {
+  align-self: flex-end;
+  background-color: var(--message-out);
+  border-top-right-radius: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+body.dark-theme .message-out {
+  background-color: var(--dark-message-out);
+}
+
+.message-text {
+  margin-bottom: 4px;
+  word-wrap: break-word;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: #999;
+  text-align: right;
+}
+
+body.dark-theme .message-time {
+  color: #aaa;
+}
+
+.compose-container {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-top: 1px solid var(--border-light);
+}
+
+body.dark-theme .compose-container {
+  background-color: #1e2428;
+  border-top: 1px solid var(--border-dark);
+}
+
+.compose-btn {
+  background: none;
+  border: none;
+  color: #919191;
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 10px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.compose-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+body.dark-theme .compose-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.compose-input {
+  flex: 1;
+  border: none;
+  background-color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  margin: 0 10px;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+body.dark-theme .compose-input {
+  background-color: #323739;
+  color: var(--dark-text);
+}
+
+.send-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.send-btn:hover {
+  background-color: #0e7063;
+}
+
+/* Auth Styles */
+.auth-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.auth-card {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: slideDown 0.4s;
+}
+
+body.dark-theme .auth-card {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.auth-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-header h2 {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+body.dark-theme .form-group label {
+  color: #aaa;
+}
+
+.form-control {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+body.dark-theme .form-control {
+  background-color: #323739;
+  border-color: #444;
+  color: var(--dark-text);
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+}
+
+.auth-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-btn:hover {
+  background-color: #0e7063;
+}
+
+.auth-toggle {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.auth-toggle a {
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Room Creation Styles */
+.room-creation {
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+body.dark-theme .room-creation {
+  border-top: 1px solid #444;
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 5px;
+  z-index: 1100;
+  transform: translateX(150%);
+  transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.toast.show {
+  transform: translateX(0);
+}
+
+.toast i {
+  margin-right: 10px;
+}
+
+/* Loading Spinner */
+.loader {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Profile Modal */
+.profile-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.profile-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.profile-content {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  animation: zoomIn 0.3s;
+}
+
+body.dark-theme .profile-content {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.profile-header h3 {
+  color: var(--primary-color);
+}
+
+.close-profile {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+body.dark-theme .close-profile {
+  color: #aaa;
+}
+
+.profile-pic-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 20px;
+}
+
+.profile-details {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.profile-email {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+body.dark-theme .profile-email {
+  color: #aaa;
+}
+
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-btn {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background-color 0.3s;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
+}
+
+.theme-toggle {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  color: var(--light-text);
+}
+
+body.dark-theme .theme-toggle {
+  background-color: #323739;
+  border-color: #444;
+  color: var(--dark-text);
+}
+
+/* Room Info Modal */
+.room-info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.room-info-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.room-info-content {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .room-info-content {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.room-info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.room-info-header h3 {
+  color: var(--primary-color);
+}
+
+.close-room-info {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+body.dark-theme .close-room-info {
+  color: #aaa;
+}
+
+.room-details {
+  margin-bottom: 20px;
+}
+
+.room-id {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+body.dark-theme .room-id {
+  background-color: #323739;
+}
+
+.copy-room-id {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.room-created {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+body.dark-theme .room-created {
+  color: #aaa;
+}
+
+.room-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.share-room {
+  flex: 1;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background-color 0.3s;
+}
+
+.share-room:hover {
+  background-color: #0e7063;
+}
+
+.leave-room {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background-color 0.3s;
+}
+
+.leave-room:hover {
+  background-color: #d32f2f;
+}
+
+/* Add Chat Button */
+.add-chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 100;
+  transition: transform 0.3s, background-color 0.3s;
+}
+
+.add-chat-btn:hover {
+  background-color: #0e7063;
+  transform: scale(1.1);
+}
+
+/* Room Join Modal */
+.join-room-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.join-room-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.join-room-content {
+  background-color: white;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .join-room-content {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+.join-room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.join-room-header h3 {
+  color: var(--primary-color);
+}
+
+.close-join-room {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+body.dark-theme .close-join-room {
+  color: #aaa;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+body.dark-theme .tabs {
+  border-bottom: 1px solid #444;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.tab.active {
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .chat-container {
+    width: 100%;
+    height: 85vh;
+  }
+  .main-container {
+    position: relative;
+  }
+
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    transform: translateX(0);
+    height: 100%;
+  }
+
+  .sidebar.hidden {
+    transform: translateX(-100%);
+  }
+
+  .back-btn {
+    display: block;
+  }
+
+  .add-chat-btn {
+    bottom: 70px;
+  }
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  height: 100vh;
+}
+
+body.dark-theme .empty-state {
+  color: #aaa;
+}
+
+.empty-state i {
+  font-size: 5rem;
+  color: var(--primary-color);
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: var(--light-text);
+}
+
+body.dark-theme .empty-state h3 {
+  color: var(--dark-text);
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+.start-chat-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background-color 0.3s;
+}
+
+.start-chat-btn:hover {
+  background-color: #0e7063;
+}
+
+/* Animation for Message Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 7.5px;
+  background-color: var(--message-in);
+  border-top-left-radius: 0;
+  width: fit-content;
+  margin-top: 5px;
+  align-self: flex-start;
+}
+
+body.dark-theme .typing-indicator {
+  background-color: var(--dark-message-in);
+}
+
+.typing-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.typing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #aaa;
+  border-radius: 50%;
+  animation: typingBounce 1.3s infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typingBounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px);
+  }
+}
+
+</style>
+  </head>
+  <body>
     <div class="auth-container" id="authContainer">
-        <div class="auth-card">
-            <div class="auth-header">
-                <h2>WhatsApp Benzeri Chat</h2>
-                <p>İletişimde kalın</p>
-            </div>
-            <div class="auth-form" id="loginForm">
-                <div class="form-group">
-                    <label for="loginEmail">E-posta</label>
-                    <input type="email" id="loginEmail" class="form-control" placeholder="E-posta adresiniz">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Şifre</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifreniz">
-                </div>
-                <button type="button" id="loginBtn" class="auth-btn">Giriş Yap</button>
-                <div class="auth-toggle">
-                    Hesabınız yok mu? <a id="showRegister">Kayıt Ol</a>
-                </div>
-            </div>
-            <div class="auth-form" id="registerForm" style="display: none;">
-                <div class="form-group">
-                    <label for="regUsername">Kullanıcı Adı</label>
-                    <input type="text" id="regUsername" class="form-control" placeholder="Kullanıcı adınız">
-                </div>
-                <div class="form-group">
-                    <label for="regEmail">E-posta</label>
-                    <input type="email" id="regEmail" class="form-control" placeholder="E-posta adresiniz">
-                </div>
-                <div class="form-group">
-                    <label for="regPassword">Şifre</label>
-                    <input type="password" id="regPassword" class="form-control" placeholder="Şifreniz">
-                </div>
-                <div class="form-group">
-                    <label for="regConfirmPassword">Şifre Tekrar</label>
-                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin">
-                </div>
-                <button type="button" id="registerBtn" class="auth-btn">Kayıt Ol</button>
-                <div class="auth-toggle">
-                    Zaten hesabınız var mı? <a id="showLogin">Giriş Yap</a>
-                </div>
-            </div>
+      <div class="auth-card">
+        <div class="auth-header">
+          <h2>WhatsChat App</h2>
+          <p>Əlaqədə qalın</p>
         </div>
+        <div class="auth-form" id="loginForm">
+          <div class="form-group">
+            <label for="loginEmail">E-poçt</label>
+            <input
+              type="email"
+              id="loginEmail"
+              class="form-control"
+              placeholder="E-poçt ünvanınız"
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Şifrə</label>
+            <input
+              type="password"
+              id="loginPassword"
+              class="form-control"
+              placeholder="Şifrəniz"
+            />
+          </div>
+          <button type="button" id="loginBtn" class="auth-btn">Daxil Ol</button>
+          <div class="auth-toggle">
+            Hesabınız yoxdur? <a id="showRegister">Qeydiyyat</a>
+          </div>
+        </div>
+        <div class="auth-form" id="registerForm" style="display: none">
+          <div class="form-group">
+            <label for="regUsername">İstifadəçi Adı</label>
+            <input
+              type="text"
+              id="regUsername"
+              class="form-control"
+              placeholder="İstifadəçi adınız"
+            />
+          </div>
+          <div class="form-group">
+            <label for="regEmail">E-poçt</label>
+            <input
+              type="email"
+              id="regEmail"
+              class="form-control"
+              placeholder="E-poçt ünvanınız"
+            />
+          </div>
+          <div class="form-group">
+            <label for="regPassword">Şifrə</label>
+            <input
+              type="password"
+              id="regPassword"
+              class="form-control"
+              placeholder="Şifrəniz"
+            />
+          </div>
+          <div class="form-group">
+            <label for="regConfirmPassword">Şifrə Təkrar</label>
+            <input
+              type="password"
+              id="regConfirmPassword"
+              class="form-control"
+              placeholder="Şifrənizi təkrar daxil edin"
+            />
+          </div>
+          <button type="button" id="registerBtn" class="auth-btn">
+            Qeydiyyat
+          </button>
+          <div class="auth-toggle">
+            Artıq hesabınız var? <a id="showLogin">Daxil Ol</a>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Container -->
-    <div class="container" id="mainContainer" style="display: none;">
-        <div class="header">
-            <div class="logo">
-                <i class="fab fa-whatsapp"></i>
-                <span>WhatsApp Benzeri</span>
-            </div>
-            <div class="header-buttons">
-                <button class="header-btn" id="toggleTheme">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="header-btn" id="showProfile">
-                    <i class="fas fa-user"></i>
-                </button>
-            </div>
+    <div class="container" id="mainContainer" style="display: none">
+      <div class="header">
+        <div class="logo">
+          <i class="fab fa-whatsapp"></i>
+          <span>WhatsChat App</span>
         </div>
-        <div class="main-container">
-            <div class="sidebar" id="sidebar">
-                <div class="search-container">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Ara veya yeni sohbet başlat" id="searchChats">
-                    </div>
-                </div>
-                <div class="chat-list" id="chatList">
-                    <!-- Chat list items will be populated here -->
-                </div>
-            </div>
-            <div class="chat-container" id="chatContainer">
-                <div class="empty-state" id="emptyState">
-                    <i class="far fa-comments"></i>
-                    <h3>Sohbetinize Başlayın</h3>
-                    <p>Sohbet etmek için mevcut bir odaya katılın veya yeni bir oda oluşturun.</p>
-                    <button class="start-chat-btn" id="showJoinRoom">
-                        <i class="fas fa-plus"></i>
-                        Oda Oluştur veya Katıl
-                    </button>
-                </div>
-                <div class="chat-active" id="chatActive" style="display: none; height: 100%; display: flex; flex-direction: column;">
-                    <div class="chat-header">
-                        <button class="back-btn" id="backBtn">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <div class="profile-pic" id="activeChatPic">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="chat-title-container">
-                            <div class="chat-title-text" id="activeChatTitle">Oda Adı</div>
-                            <div class="chat-subtitle" id="activeChatSubtitle">3 Katılımcı</div>
-                        </div>
-                        <div class="chat-actions">
-                            <button class="chat-action-btn" id="showRoomInfo">
-                                <i class="fas fa-info-circle"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="messages" id="messagesContainer">
-                        <!-- Messages will be populated here -->
-                    </div>
-                    <div class="compose-container">
-                        <button class="compose-btn">
-                            <i class="far fa-smile"></i>
-                        </button>
-                        <button class="compose-btn">
-                            <i class="fas fa-paperclip"></i>
-                        </button>
-                        <input type="text" class="compose-input" id="messageInput" placeholder="Mesaj yazın">
-                        <button class="send-btn" id="sendBtn">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+        <div class="header-buttons">
+          <button class="header-btn" id="toggleTheme">
+            <i class="fas fa-moon"></i>
+          </button>
+          <button class="header-btn" id="showProfile">
+            <i class="fas fa-user"></i>
+          </button>
         </div>
+      </div>
+      <div class="main-container">
+        <div class="sidebar" id="sidebar">
+          <div class="search-container">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input
+                type="text"
+                placeholder="Axtar və ya yeni söhbət başlat"
+                id="searchChats"
+              />
+            </div>
+          </div>
+          <div class="chat-list" id="chatList">
+            <!-- Söhbət siyahısı buraya əlavə olunacaq -->
+          </div>
+        </div>
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <button class="back-btn" id="backBtn">
+                  <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="profile-pic" id="activeChatPic">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="chat-title-container">
+                  <div class="chat-title-text" id="activeChatTitle">Otaq Adı</div>
+                  <div class="chat-subtitle" id="activeChatSubtitle">
+                    İştirakçı sayı
+                  </div>
+                </div>
+                <div class="chat-actions">
+                  <button class="chat-action-btn" id="showRoomInfo">
+                    <i class="fas fa-info-circle"></i>
+                  </button>
+                </div>
+              </div>
+          <div class="empty-state" id="emptyState">
+            <i class="far fa-comments"></i>
+            <h3>Söhbətə Başlayın</h3>
+            <p>
+              Söhbət etmək üçün mövcud bir otağa qoşulun və ya yeni bir otaq
+              yaradın.
+            </p>
+            
+          </div>
+          <div
+            class="chat-active"
+            id="chatActive"
+            style="
+              display: none;
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+            "
+          >
+          
+            <div class="messages" id="messagesContainer">
+              <!-- Mesajlar buraya əlavə olunacaq -->
+            </div>
+            <div class="compose-container">
+              <button class="compose-btn">
+                <i class="far fa-smile"></i>
+              </button>
+              <button class="compose-btn">
+                <i class="fas fa-paperclip"></i>
+              </button>
+              <input
+                type="text"
+                class="compose-input"
+                id="messageInput"
+                placeholder="Mesaj yazın"
+              />
+              <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Add Chat Button -->
-    <div class="add-chat-btn" id="addChatBtn" style="display: none;">
-        <i class="fas fa-plus"></i>
+    <!-- Söhbət Əlavə Et Düyməsi -->
+    <div class="add-chat-btn" id="addChatBtn" style="display: none">
+      <i class="fas fa-plus"></i>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Bildiriş (Toast) -->
     <div class="toast" id="toast">
-        <i class="fas fa-info-circle"></i>
-        <span id="toastMessage">Bu bir bildirimdir</span>
+      <i class="fas fa-info-circle"></i>
+      <span id="toastMessage">Bu bir bildirişdir</span>
     </div>
 
-    <!-- Profile Modal -->
+    <!-- Profil Modalı -->
     <div class="profile-modal" id="profileModal">
-        <div class="profile-content">
-            <div class="profile-header">
-                <h3>Profil</h3>
-                <button class="close-profile" id="closeProfile">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="profile-pic-large" id="profilePicLarge">
-                <i class="fas fa-user"></i>
-            </div>
-            <div class="profile-details">
-                <div class="profile-name" id="profileName">Kullanıcı Adı</div>
-                <div class="profile-email" id="profileEmail">kullanici@mail.com</div>
-            </div>
-            <div class="profile-actions">
-                <button class="profile-btn theme-toggle" id="profileToggleTheme">
-                    <i class="fas fa-moon"></i>
-                    <span id="themeToggleText">Karanlık Mod</span>
-                </button>
-                <button class="profile-btn logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Çıkış Yap
-                </button>
-            </div>
+      <div class="profile-content">
+        <div class="profile-header">
+          <h3>Profil</h3>
+          <button class="close-profile" id="closeProfile">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <div class="profile-pic-large" id="profilePicLarge">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="profile-details">
+          <div class="profile-name" id="profileName">İstifadəçi Adı</div>
+          <div class="profile-email" id="profileEmail">istifadeci@mail.com</div>
+        </div>
+        <div class="profile-actions">
+          <button class="profile-btn theme-toggle" id="profileToggleTheme">
+            <i class="fas fa-moon"></i>
+            <span id="themeToggleText">Qaranlıq Rejim</span>
+          </button>
+          <button class="profile-btn logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            Çıxış Et
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Room Info Modal -->
+    <!-- Otaq Məlumatı Modalı -->
     <div class="room-info-modal" id="roomInfoModal">
-        <div class="room-info-content">
-            <div class="room-info-header">
-                <h3>Oda Bilgisi</h3>
-                <button class="close-room-info" id="closeRoomInfo">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="room-details">
-                <div class="room-id">
-                    <span id="roomIdText">ABC123</span>
-                    <button class="copy-room-id" id="copyRoomId">
-                        <i class="far fa-copy"></i>
-                    </button>
-                </div>
-                <div class="room-created" id="roomCreated">
-                    Oluşturulma: 01.01.2023
-                </div>
-            </div>
-            <div class="room-actions">
-                <button class="share-room" id="shareRoom">
-                    <i class="fas fa-share-alt"></i>
-                    Paylaş
-                </button>
-                <button class="leave-room" id="leaveRoom">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Ayrıl
-                </button>
-            </div>
+      <div class="room-info-content">
+        <div class="room-info-header">
+          <h3>Otaq Məlumatı</h3>
+          <button class="close-room-info" id="closeRoomInfo">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <div class="room-details">
+          <div class="room-id">
+            <span id="roomIdText">ABC123</span>
+            <button class="copy-room-id" id="copyRoomId">
+              <i class="far fa-copy"></i>
+            </button>
+          </div>
+          <div class="room-created" id="roomCreated">
+            Yaradılma Tarixi: 01.01.2023
+          </div>
+        </div>
+        <div class="room-actions">
+          <button class="share-room" id="shareRoom">
+            <i class="fas fa-share-alt"></i>
+            Paylaş
+          </button>
+          <button class="leave-room" id="leaveRoom">
+            <i class="fas fa-sign-out-alt"></i>
+            Ayrıl
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Join/Create Room Modal -->
+    <!-- Otaq Yarat / Qoşul Modalı -->
     <div class="join-room-modal" id="joinRoomModal">
-        <div class="join-room-content">
-            <div class="join-room-header">
-                <h3>Oda Oluştur veya Katıl</h3>
-                <button class="close-join-room" id="closeJoinRoom">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="tabs">
-                <div class="tab active" data-tab="createRoom">Oda Oluştur</div>
-                <div class="tab" data-tab="joinRoom">Odaya Katıl</div>
-            </div>
-            <div class="tab-content active" id="createRoomTab">
-                <div class="form-group">
-                    <label for="roomName">Oda Adı</label>
-                    <input type="text" id="roomName" class="form-control" placeholder="Odanızın adını girin">
-                </div>
-                <button type="button" id="createRoomBtn" class="auth-btn">
-                    <i class="fas fa-plus-circle"></i>
-                    Oda Oluştur
-                </button>
-            </div>
-            <div class="tab-content" id="joinRoomTab">
-                <div class="form-group">
-                    <label for="roomCode">Oda Kodu</label>
-                    <input type="text" id="roomCode" class="form-control" placeholder="Oda kodunu girin">
-                </div>
-                <button type="button" id="joinRoomBtn" class="auth-btn">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Odaya Katıl
-                </button>
-            </div>
+      <div class="join-room-content">
+        <div class="join-room-header">
+          <h3>Otaq Yarat və ya Qoşul</h3>
+          <button class="close-join-room" id="closeJoinRoom">
+            <i class="fas fa-times"></i>
+          </button>
         </div>
+        <div class="tabs">
+          <div class="tab active" data-tab="createRoom">Otaq Yarat</div>
+          <div class="tab" data-tab="joinRoom">Otağa Qoşul</div>
+        </div>
+        <div class="tab-content active" id="createRoomTab">
+          <div class="form-group">
+            <label for="roomName">Otaq Adı</label>
+            <input
+              type="text"
+              id="roomName"
+              class="form-control"
+              placeholder="Otağınızın adını daxil edin"
+            />
+          </div>
+          <button type="button" id="createRoomBtn" class="auth-btn">
+            <i class="fas fa-plus-circle"></i>
+            Otaq Yarat
+          </button>
+        </div>
+        <div class="tab-content" id="joinRoomTab">
+          <div class="form-group">
+            <label for="roomCode">Otaq Kodu</label>
+            <input
+              type="text"
+              id="roomCode"
+              class="form-control"
+              placeholder="Otaq kodunu daxil edin"
+            />
+          </div>
+          <button type="button" id="joinRoomBtn" class="auth-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Otağa Qoşul
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Firebase Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-app-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-auth-compat.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.17.2/firebase-database-compat.min.js"></script>
-    
-    <script>
-        
+<script>
+          
 // Firebase Initialize
 const firebaseConfig = {
     apiKey: "AIzaSyALRHajoFgM-fWJYvi1Le-QbduTCUWDeGE",
@@ -1472,9 +1571,9 @@ let activeChat = null;
 const isDarkTheme = localStorage.getItem('darkTheme') === 'true';
 if (isDarkTheme) {
     document.body.classList.add('dark-theme');
-    themeToggleText.textContent = 'Aydınlık Mod';
+    themeToggleText.textContent = 'İşıqlı Mod';
     toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
-    profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+    profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> İşıqlı Mod';
 }
 
 // Toggle between login and register forms
@@ -1494,13 +1593,13 @@ function toggleThemeMode() {
     localStorage.setItem('darkTheme', isDark);
 
     if (isDark) {
-        themeToggleText.textContent = 'Aydınlık Mod';
+        themeToggleText.textContent = 'İşıqlı Mod';
         toggleTheme.innerHTML = '<i class="fas fa-sun"></i>';
-        profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> Aydınlık Mod';
+        profileToggleTheme.innerHTML = '<i class="fas fa-sun"></i> İşıqlı Mod';
     } else {
-        themeToggleText.textContent = 'Karanlık Mod';
+        themeToggleText.textContent = 'Qaranlıq Mod';
         toggleTheme.innerHTML = '<i class="fas fa-moon"></i>';
-        profileToggleTheme.innerHTML = '<i class="fas fa-moon"></i> Karanlık Mod';
+        profileToggleTheme.innerHTML = '<i class="fas fa-moon"></i> Qaranlıq Mod';
     }
 }
 
@@ -2060,6 +2159,6 @@ window.addEventListener('resize', () => {
         sidebar.classList.remove('hidden');
     }
 });
-    </script>
-</body>
+</script>
+  </body>
 </html>
